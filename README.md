@@ -57,7 +57,7 @@ You can find some helpful links below to get started.
 
 To use this with Claude Desktop, add the following to your `claud_desktop_config.json` file. The full path on MacOS: `~/Library/Application Support/Claude/claud_desktop_config.json`, on Windows: `%APPDATA%\Claude\claud_desktop_config.json`
 
-```json
+```js
 {
   "mcpServers": {
     "eventcatalog": {
