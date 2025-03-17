@@ -17,7 +17,7 @@
 
 ## Features
 
-- 🤖 Connect to any MCP Client (Claude, Cursor, Windsurf, etc)
+- 🤖 Connect to any MCP Client ([Claude](https://www.anthropic.com/claude), [Cursor](https://www.cursor.com/), [Windsurf](https://codeium.com/windsurf), etc)
 - 🤖 Run locally on your machine
 - 🤖 Connect to your EventCatalog instances
 - 🤖 Ask questions about your OpenAPI and AsyncAPI specifications
