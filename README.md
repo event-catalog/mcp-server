@@ -18,11 +18,12 @@
 ## Features
 
 - 🤖 Connect to any MCP Client ([Claude](https://www.anthropic.com/claude), [Cursor](https://www.cursor.com/), [Windsurf](https://codeium.com/windsurf), etc)
-- 🤖 Run locally on your machine
+- 🤖 Run MCP server locally on your machine with one command
 - 🤖 Connect to your EventCatalog instances
+- 🤖 Ask questions about your architectures
 - 🤖 Ask questions about your OpenAPI and AsyncAPI specifications
 - 🤖 Ask about domains, services and messages, and much more
-- 🤖 Get the schema for a given event, query, command or service
+- 🤖 Get the schemas for events, queries, commands and services (OpenAPI, AsyncAPI, JSON Schema)
 
 ## Using AI to get more value from EventCatalog
 
