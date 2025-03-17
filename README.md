@@ -65,7 +65,7 @@ To use this with Claude Desktop, add the following to your `claud_desktop_config
       "args": [
         "-y",
         "@eventcatalog/mcp-server",
-        "https://demo.eventcatalog.dev" // Replace with your EventCatalog instance
+        "https://demo.eventcatalog.dev" // Replace with your EventCatalog URL
       ]
     }
   }
