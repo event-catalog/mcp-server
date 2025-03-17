@@ -54,6 +54,9 @@ Each MCP client has a different way of adding the MCP server.
 
 You can find some helpful links below to get started.
 
+- [Claude Desktop](#adding-the-mcp-server-to-claude-desktop)
+- [Cursor](#adding-the-mcp-server-to-cursor)
+
 ## Adding the MCP server to Claude Desktop
 
 To use this with Claude Desktop, add the following to your `claud_desktop_config.json` file. The full path on MacOS: `~/Library/Application Support/Claude/claud_desktop_config.json`, on Windows: `%APPDATA%\Claude\claud_desktop_config.json`
