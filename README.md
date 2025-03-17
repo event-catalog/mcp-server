@@ -96,6 +96,7 @@ You can also create `.mcp.json` files in your project to configure the MCP serve
       "args": ["-y", "@eventcatalog/mcp-server", "https://demo.eventcatalog.dev"]
     }
   }
+}
 ```
 
 You can read more about configuration for your project in the [Cursor documentation](https://docs.cursor.com/context/model-context-protocol#configuration-locations).
