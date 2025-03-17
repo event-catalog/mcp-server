@@ -1,0 +1,63 @@
+[2025-03-17T10:25:21.362Z] [INFO] Starting MCP server
+[2025-03-17T10:28:14.201Z] [INFO] Starting MCP server
+[2025-03-17T10:28:31.466Z] [INFO] Starting MCP server
+[2025-03-17T10:28:31.485Z] [INFO] Starting MCP server
+[2025-03-17T10:28:45.495Z] [INFO] Starting MCP server
+[2025-03-17T10:28:45.497Z] [INFO] Starting MCP server
+[2025-03-17T10:37:53.616Z] [INFO] Starting MCP server
+[2025-03-17T10:37:53.616Z] [INFO] Starting MCP server
+[2025-03-17T10:38:33.372Z] [INFO] Starting MCP server
+[2025-03-17T10:38:33.373Z] [INFO] Starting MCP server
+[2025-03-17T10:38:50.447Z] [INFO] Starting MCP server
+[2025-03-17T10:38:50.483Z] [INFO] Starting MCP server
+[2025-03-17T10:39:22.306Z] [INFO] Starting MCP server
+[2025-03-17T10:39:22.307Z] [INFO] Starting MCP server
+[2025-03-17T10:46:44.737Z] [INFO] Starting MCP server
+[2025-03-17T10:48:06.963Z] [INFO] Starting MCP server
+[2025-03-17T10:49:39.875Z] [INFO] Starting MCP server
+[2025-03-17T10:51:49.023Z] [INFO] Starting MCP server
+[2025-03-17T10:52:45.043Z] [INFO] Starting MCP server
+[2025-03-17T11:04:36.902Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:04:42.084Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:05:33.373Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:07:32.398Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:07:32.398Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:07:39.454Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:08:11.565Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:08:21.643Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:08:33.333Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:27:15.279Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:27:15.279Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:27:15.308Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:28:16.417Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:28:16.419Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:28:23.829Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:35:48.152Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:35:48.152Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:36:44.550Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T11:48:36.681Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T13:54:19.785Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T13:54:19.788Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T13:54:27.630Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:00:25.595Z] [INFO] Using EventCatalog URL: http://localhost:3000
+[2025-03-17T14:00:34.974Z] [INFO] Using EventCatalog URL: http://localhost:3000
+[2025-03-17T14:11:29.805Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:11:29.808Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:11:37.610Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:11:46.252Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:11:46.275Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:12:00.396Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:12:19.430Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:12:22.106Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:12:25.242Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:12:32.908Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:12:35.662Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:12:39.904Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:17:38.315Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:17:38.316Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:17:49.992Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:17:55.603Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:17:55.606Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:17:57.416Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:18:44.710Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev
+[2025-03-17T14:18:48.465Z] [INFO] Using EventCatalog URL: https://demo.eventcatalog.dev

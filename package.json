@@ -1,0 +1,41 @@
+{
+  "name": "@eventcatalog/mcp-server",
+  "version": "0.0.1",
+  "description": "MCP server for EventCatalog",
+  "license": "MIT",
+  "author": "David Boyne",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "eventcatalog-mcp-server": "dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc && shx chmod +x dist/*.js",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "format": "prettier --config .prettierrc --write \"**/*.{js,ts}\"",
+    "format:diff": "prettier --config .prettierrc --list-different \"**/*.{js,ts}\"",
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "changeset": "changeset",
+    "release": "changeset publish"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.0",
+    "node-fetch": "^3.3.2",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.28.1",
+    "prettier": "^3.5.3",
+    "shx": "^0.3.4",
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.9"
+  }
+}
