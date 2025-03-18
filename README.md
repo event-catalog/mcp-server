@@ -4,7 +4,7 @@
 <h3>Get insights from your EventCatalog directly from your MCP Client (<a href="https://www.anthropic.com/claude">Claude</a>, <a href="https://www.cursor.com/">Cursor</a>, <a href="https://codeium.com/windsurf">Windsurf</a>, etc)</h3>
 
 <!-- <img width="745" alt="Screenshot 2024-12-13 at 09 56 05" src="https://github.com/user-attachments/assets/f537ec1f-54ee-4de1-996c-c6b72191be39" /> -->
-<img width="745" alt="EventCatalog" src="./images/ide.jpeg" />
+<img width="745" alt="EventCatalog" src="./images/mcp.png" />
 
 
 <h4>Features: Ask about domains, services and messages. Get answers in seconds. Request schemas, who owns what and much more.</h4>
