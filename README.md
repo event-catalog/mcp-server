@@ -9,7 +9,6 @@
 
 <h4>Features: Ask about domains, services and messages. Get answers in seconds. Request schemas, who owns what and much more.</h4>
 
-
 [Read the Docs](https://www.eventcatalog.dev/docs/development/getting-started/introduction) | [View Demo](https://demo.eventcatalog.dev)
 
 </div>
@@ -154,17 +153,19 @@ Here is a list of all the APIs that the MCP server supports.
 
 We are working on adding more APIs to the MCP server. If you need something specific, please [open an issue](https://github.com/eventcatalog/mcp-server/issues) and we will add it to the server.
 
-## Backlog
+## TODO
 
 Some ideas for the MCP server, feel free to add to the list!
 
 - [ ] Add support for private hosted EventCatalog instances
     - We make fetch requests to EventCatalog instances, let the user specify custom headers or auth params we can add onto each request.
 - [ ] Add prompts / tools to write to EventCatalog, if we get interest from the community
+- [ ] Add support to get teams and users
+- [ ] Add support to get flows from EventCatalog
 
 # Sponsors
 
-Thank you to our project  sponsors.
+Thank you to our project sponsors.
 
 ## Gold sponsors
 
