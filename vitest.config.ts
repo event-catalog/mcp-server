@@ -7,7 +7,7 @@ export default defineConfig({
     include: ['tests/**/*.spec.ts'],
     coverage: {
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/']
-    }
-  }
-}); 
+      exclude: ['node_modules/'],
+    },
+  },
+});

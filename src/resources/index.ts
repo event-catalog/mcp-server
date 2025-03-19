@@ -47,7 +47,24 @@ const resources = [
     description: 'All commands in EventCatalog',
     mimeType: 'application/json',
   },
-  
+  {
+    name: 'All Flows in EventCatalog',
+    uri: 'eventcatalog://flows',
+    description: 'All flows in EventCatalog',
+    mimeType: 'application/json',
+  },
+  {
+    name: 'All Teams in EventCatalog',
+    uri: 'eventcatalog://teams',
+    description: 'All teams in EventCatalog',
+    mimeType: 'application/json',
+  },
+  {
+    name: 'All Users in EventCatalog',
+    uri: 'eventcatalog://users',
+    description: 'All users in EventCatalog',
+    mimeType: 'application/json',
+  },
 ];
 
 export function registerResources(server: McpServer) {
@@ -59,6 +76,4 @@ export function registerResources(server: McpServer) {
       };
     });
   });
-
-
 }
