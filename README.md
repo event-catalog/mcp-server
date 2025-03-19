@@ -119,6 +119,12 @@ Here is a list of all the APIs that the MCP server supports.
   - Returns all queries in the catalog
 - `eventcatalog://commands`
   - Returns all commands in the catalog
+- `eventcatalog://flows`
+  - Returns all flows in the catalog
+- `eventcatalog://teams`
+  - Returns all teams in the catalog
+- `eventcatalog://users`
+  - Returns all users in the catalog
 
 
 ## Tools
@@ -133,6 +139,16 @@ Here is a list of all the APIs that the MCP server supports.
   - Gets and returns a list of all commands in the catalog
 - `get_queries`
   - Gets and returns a list of all queries in the catalog
+- `get_flows`
+  - Gets and returns a list of all flows in the catalog
+- `get_teams`
+  - Gets and returns a list of all teams in the catalog
+- `get_team`
+  - Gets and returns a team from the catalog
+- `get_users`
+  - Gets and returns a list of all users in the catalog
+- `get_user`
+  - Gets and returns a user from the catalog
 
 ### Schemas
 - `get_event_schema`
@@ -163,6 +179,26 @@ Some ideas for the MCP server, feel free to add to the list!
 - [ ] Add support to get teams and users
 - [ ] Add support to get flows from EventCatalog
 
+## Contributing
+
+1. Clone the repository
+2. Run `pnpm install` to install the dependencies
+3. Run `pnpm run build`
+
+To use the build as your MCP server you can point your MCP client to the `dist` folder.
+
+Example for Cursor:
+
+```json
+{
+  "mcpServers": {
+    "eventcatalog": {
+      "command": "npx",
+      "args": ["-y", "tsx /PATH_TO_YOUR_REPO/src/index.ts",  "https://demo.eventcatalog.dev"]
+    }
+  }
+}
+```
 # Sponsors
 
 Thank you to our project sponsors.

@@ -49,6 +49,26 @@ const tools = [
     name: 'get_queries',
     description: 'Get information about all queries in EventCatalog',
   },
+  {
+    name: 'get_flows',
+    description: 'Get information about all flows in EventCatalog',
+  },
+  {
+    name: 'get_team',
+    description: 'Get information about a team in EventCatalog',
+  },
+  {
+    name: 'get_teams',
+    description: 'Get information about all teams in EventCatalog',
+  },
+  {
+    name: 'get_user',
+    description: 'Get information about a user in EventCatalog',
+  },
+  {
+    name: 'get_users',
+    description: 'Get information about all users in EventCatalog',
+  },
 ];
 
 const schemaTools = [
@@ -85,7 +105,6 @@ const schemaTools = [
 ];
 
 export function registerTools(server: McpServer) {
-
   tools.forEach((tool) => {
     server.tool(tool.name, tool.description, {}, async () => {
       const text = await getEventCatalogResources();

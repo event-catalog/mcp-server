@@ -2,3 +2,4 @@ node_modules
 dist
 TODO.js
 start.sh
+src/mcp-server.log
