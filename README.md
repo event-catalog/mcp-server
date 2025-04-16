@@ -41,6 +41,14 @@ Using the **EventCatalog MCP Server** you can get more value from your EventCata
 
 ## Installation
 
+### Installing via Smithery
+
+To install EventCatalog for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@event-catalog/mcp-server):
+
+```bash
+npx -y @smithery/cli install @event-catalog/mcp-server --client claude
+```
+
 First, you need to enable the [`LLMS.txt` feature](https://www.eventcatalog.dev/docs/development/developer-tools/llms.txt) in your EventCatalog instance.
 
 1. Enable the [`LLMS.txt` feature](https://www.eventcatalog.dev/docs/development/developer-tools/llms.txt) in your EventCatalog instance, by configuring your `eventcatalog.config.js` file.
