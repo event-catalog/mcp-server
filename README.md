@@ -242,4 +242,4 @@ Find more details on our [services page](https://eventcatalog.dev/services).
 
 # License
 
-Usage of this feature is part of the [EventCatalog Pro Edition](https://www.eventcatalog.dev/pricing).
+Usage of this feature is part of the [EventCatalog Pro Edition](https://www.eventcatalog.dev/pricing)
