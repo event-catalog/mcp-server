@@ -2,11 +2,13 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 let cachedResponse: string | null = null;
 import fetch from 'node-fetch';
 import { z } from 'zod';
+import { URL } from 'url';
 
 const getEventCatalogResources = async () => {
   if (cachedResponse) return cachedResponse;
-  const BASE_URL = process.env.EVENTCATALOG_URL;
-  const response = await fetch(`${BASE_URL}/docs/llm/llms-full.txt`);
+  const baseUrl = process.env.EVENTCATALOG_URL || '';
+  const url = new URL('/docs/llm/llms-full.txt', baseUrl);
+  const response = await fetch(url.toString());
   const text = await response.text();
   cachedResponse = text;
   return text;
@@ -121,8 +123,9 @@ export function registerTools(server: McpServer) {
       tool.description,
       { resourceName: z.string(), fileName: z.string() },
       async ({ resourceName, fileName }) => {
-        const BASE_URL = process.env.EVENTCATALOG_URL;
-        const response = await fetch(`${BASE_URL}/generated/${tool.collection}/${resourceName}/${fileName}`);
+        const baseUrl = process.env.EVENTCATALOG_URL || '';
+        const url = new URL(`/generated/${tool.collection}/${resourceName}/${fileName}`, baseUrl);
+        const response = await fetch(url.toString());
         if (response.status === 404) {
           return {
             content: [{ type: 'text', text: `Schema for ${resourceName} not found` }],
