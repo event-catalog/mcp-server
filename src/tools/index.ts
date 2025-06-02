@@ -22,6 +22,14 @@ const getResourceInformation = async (type: string, id: string, version: string)
   return text;
 };
 
+const getUbiquitousLanguageTerms = async (domain: string) => {
+  const baseUrl = process.env.EVENTCATALOG_URL || '';
+  const url = new URL(`docs/domains/${domain}/language.mdx`, baseUrl);
+  const response = await fetch(url.toString());
+  const text = await response.text();
+  return text;
+};
+
 const getProducersAndConsumers = async () => {
   const baseUrl = process.env.EVENTCATALOG_URL || '';
   const url = new URL(`/docs/llm/llms-services.txt`, baseUrl);
@@ -37,7 +45,7 @@ export const TOOL_DEFINITIONS = [
       'Find resources that are available in EventCatalog',
       '',
       'Use this tool when you need to:',
-      '- Get a list of resources in EventCatalog including services, domains, events, commands, queries and flows',
+      '- Get a list of resources in EventCatalog including services, domains, events, commands, queries and flows, ubiquitous language terms and entities',
       "- Find a resource's id and version to aid other tool requests",
       '- Just return the list of matched resources in EventCatalog with a short description of each resource',
       "- Don't return bullet points, just return the list of resources in a readable format",
@@ -55,8 +63,8 @@ export const TOOL_DEFINITIONS = [
     description: [
       'Get more information about a service, domain, event, command, query or flow in EventCatalog using its id and version',
       'Use this tool when you need to:',
-      '- Get more details/information about a service, domain, event, command, query or flow in EventCatalog',
-      '- Use the id to find more information about a service, domain, event, command, query or flow',
+      '- Get more details/information about a service, domain, event, command, query, flow or entity in EventCatalog',
+      '- Use the id to find more information about a service, domain, event, command, query, flow or entity',
       '- Return everything you know about this resource',
       '- If the resource has a specification return links to the specification file',
       '- When you find owners the url would look something like /docs/users/{id} if its a user or /docs/teams/{id} if its a team',
@@ -70,7 +78,24 @@ export const TOOL_DEFINITIONS = [
     paramsSchema: {
       id: z.string().trim().describe('The id of the resource to find'),
       version: z.string().trim().describe('The version of the resource to find'),
-      type: z.enum(['services', 'domains', 'events', 'commands', 'queries', 'flows']).describe('The type of resource to find'),
+      type: z
+        .enum(['services', 'domains', 'events', 'commands', 'queries', 'flows', 'entities'])
+        .describe('The type of resource to find'),
+    },
+  },
+  {
+    name: 'explain_ubiquitous_language_terms' as const,
+    description: [
+      'Explain ubiquitous language terms',
+      'Use this tool when you need to:',
+      '- Find information about a ubiquitous language term',
+      '- Use the term to find more information about it',
+      '- Return everything you know about this term',
+      '- The term has a description and summary, return both',
+      `- If you return any URLS make sure to include the host URL ${process.env.EVENTCATALOG_URL}`,
+    ].join('\n'),
+    paramsSchema: {
+      domain: z.string().trim().describe('The domain the contains the ubiquitous language term to explain'),
     },
   },
   {
@@ -154,6 +179,12 @@ const handlers = {
   review_schema_changes: async (params: any) => {
     return {
       content: [{ type: 'text', text: '' }],
+    };
+  },
+  explain_ubiquitous_language_terms: async (params: any) => {
+    const text = await getUbiquitousLanguageTerms(params.domain);
+    return {
+      content: [{ type: 'text', text: text }],
     };
   },
 };

@@ -42,6 +42,7 @@ Rather then digging through your architecture to find the answers you need, you 
 - 🤖 Ask questions about your OpenAPI and AsyncAPI specifications
 - 🤖 Ask about domains, services and messages, and much more
 - 🤖 Get the schemas for events, queries, commands and services (OpenAPI, AsyncAPI, JSON Schema)
+- 🤖 Ask questions about ubiquitous language for any domain and their entities
 
 ---
 
@@ -135,6 +136,8 @@ Here is a list of all the APIs that the MCP server supports.
   - Returns the schema for a service, event, command or query in EventCatalog
 - `review_schema_changes`
   - Reviews schema changes for breaking changes and suggests fixes.
+- `explain_ubiquitous_language_terms`
+  - Explain ubiquitous language terms for a given domain
 
 ## Resources
 
