@@ -1,5 +1,11 @@
 # @eventcatalog/mcp-server
 
+## 1.0.2
+
+### Patch Changes
+
+- c99b1d3: fix(core): fixed MCP as npx server
+
 ## 1.0.1
 
 ### Patch Changes
