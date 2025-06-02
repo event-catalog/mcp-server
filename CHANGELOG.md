@@ -1,5 +1,11 @@
 # @eventcatalog/mcp-server
 
+## 1.0.0
+
+### Major Changes
+
+- 3ebae72: feat(core): refactored tools and release v1
+
 ## 0.0.3
 
 ### Patch Changes
