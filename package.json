@@ -21,7 +21,7 @@
     "watch": "tsc --watch",
     "format": "prettier --config .prettierrc --write \"**/*.{js,ts}\"",
     "format:diff": "prettier --config .prettierrc --list-different \"**/*.{js,ts}\"",
-    "test": "vitest",
+    "test": "vitest run --passWithNoTests",
     "test:coverage": "vitest run --coverage",
     "changeset": "changeset",
     "release": "changeset publish"
