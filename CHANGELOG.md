@@ -1,5 +1,11 @@
 # @eventcatalog/mcp-server
 
+## 1.0.1
+
+### Patch Changes
+
+- 5742760: feat(core): added tool for ubiquitous language
+
 ## 1.0.0
 
 ### Major Changes
