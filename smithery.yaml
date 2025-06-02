@@ -7,13 +7,18 @@ startCommand:
     type: object
     required:
       - url
+      - licenseKey
     properties:
       url:
         type: string
         description: The URL of your EventCatalog instance
+      licenseKey:
+        type: string
+        description: The license key for your EventCatalog instance
   commandFunction:
     # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
     |-
-    (config) => ({ command: 'node', args: ['dist/index.js', config.url] })
+    (config) => ({ command: 'node', args: ['dist/index.js', config.url, config.licenseKey] })
   exampleConfig:
     url: https://demo.eventcatalog.dev
+    licenseKey: ABCD-1234-5678-9012-3456-7890

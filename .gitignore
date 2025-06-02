@@ -3,3 +3,4 @@ dist
 TODO.js
 start.sh
 src/mcp-server.log
+.DS_Store

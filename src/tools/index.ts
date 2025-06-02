@@ -7,149 +7,168 @@ import { URL } from 'url';
 const getEventCatalogResources = async () => {
   if (cachedResponse) return cachedResponse;
   const baseUrl = process.env.EVENTCATALOG_URL || '';
-  const url = new URL('/docs/llm/llms-full.txt', baseUrl);
+  const url = new URL('/docs/llm/llms.txt', baseUrl);
   const response = await fetch(url.toString());
   const text = await response.text();
   cachedResponse = text;
   return text;
 };
 
-// const getManifestRules = async () => {
-//   const manifest = `
-//     ## Event-driven architecture rules
-//     - We don't accept any breaking changes to events, queries or commands after they are released.
-//     - All our messages have correlation id in the header.
-//     - All messages have metadata tag in them.
-//     - All messages have data tag in them.
-//     - All messages have a name tag in them.
-//     - All messages have a version tag in them.
-//     - All messages have a type tag in them.
-//     - All messages have a source tag in them.
-//     - All messages have a timestamp tag in them.
-//     `;
-//   return manifest;
-// };
+const getResourceInformation = async (type: string, id: string, version: string) => {
+  const baseUrl = process.env.EVENTCATALOG_URL || '';
+  const url = new URL(`/docs/${type}/${id}/${version}.mdx`, baseUrl);
+  const response = await fetch(url.toString());
+  const text = await response.text();
+  return text;
+};
 
-const tools = [
+const getProducersAndConsumers = async () => {
+  const baseUrl = process.env.EVENTCATALOG_URL || '';
+  const url = new URL(`/docs/llm/llms-services.txt`, baseUrl);
+  const response = await fetch(url.toString());
+  const text = await response.text();
+  return text;
+};
+
+export const TOOL_DEFINITIONS = [
   {
-    name: 'get_services',
-    description: 'Get information about all services in EventCatalog',
+    name: 'find_resources' as const,
+    description: [
+      'Find resources that are available in EventCatalog',
+      '',
+      'Use this tool when you need to:',
+      '- Get a list of resources in EventCatalog including services, domains, events, commands, queries and flows',
+      "- Find a resource's id and version to aid other tool requests",
+      '- Just return the list of matched resources in EventCatalog with a short description of each resource',
+      "- Don't return bullet points, just return the list of resources in a readable format",
+      '- Include the resource name, description, and a link to the resource',
+      '- When you return a link, remove the .mdx from the end of the url',
+      '- Return a list of messages the resource produces and consumes, these are marked as sends and receives',
+      '- If the resource has a domain, include it in the response',
+      '- Ask the user if they would like more information about a specific resource',
+      '- When you return a message, in brackets let me know if its a query, command or event',
+      `- The host URL is ${process.env.EVENTCATALOG_URL}`,
+    ].join('\n'),
   },
   {
-    name: 'get_domains',
-    description: 'Get information about all domains in EventCatalog',
+    name: 'find_resource' as const,
+    description: [
+      'Get more information about a service, domain, event, command, query or flow in EventCatalog using its id and version',
+      'Use this tool when you need to:',
+      '- Get more details/information about a service, domain, event, command, query or flow in EventCatalog',
+      '- Use the id to find more information about a service, domain, event, command, query or flow',
+      '- Return everything you know about this resource',
+      '- If the resource has a specification return links to the specification file',
+      '- When you find owners the url would look something like /docs/users/{id} if its a user or /docs/teams/{id} if its a team',
+      '- When you return the producers and consumers (the messages the service produces and consumes) make sure they include the url to the documentation, the url would look something like /docs/{type}/{id}, e.g /docs/events/MyEvent/1.0.0 or /docs/commands/MyCommand/1.0.0',
+      '- When you return owners make sure they include the url to the documentation',
+      '- If the resource has a domain, include it in the response',
+      '- Ask the user if they would like more information about a specific resource',
+      '- When you return a message, in brackets let me know if its a query, command or event',
+      `- If you return any URLS make sure to include the host URL ${process.env.EVENTCATALOG_URL}`,
+    ].join('\n'),
+    paramsSchema: {
+      id: z.string().trim().describe('The id of the resource to find'),
+      version: z.string().trim().describe('The version of the resource to find'),
+      type: z.enum(['services', 'domains', 'events', 'commands', 'queries', 'flows']).describe('The type of resource to find'),
+    },
   },
   {
-    name: 'get_commands',
-    description: 'Get information about all commands in EventCatalog',
+    name: 'find_producers_and_consumers' as const,
+    description: [
+      'Get the producers (sends) and consumers (receives) for a service in EventCatalog',
+      'Use this tool when you need to:',
+      '- Get the producers (sends) and consumers (receives) for a service in EventCatalog',
+      '- Use the id and versions of the messages for future prompts if the user wants to dive deeper',
+      '- Return everything you know about this resource, if you need more information use other tools to find it',
+      '- Ask the user if they would like more information about a specific resource',
+      '- When you return a message, in brackets let me know if its a query, command or event',
+      `- The host URL is ${process.env.EVENTCATALOG_URL}`,
+    ].join('\n'),
   },
   {
-    name: 'get_events',
-    description: 'Get information about all events in EventCatalog',
+    name: 'get_schema' as const,
+    description: [
+      'Returns the schema for a service, event, command or query in EventCatalog',
+      'Use this tool when you need to:',
+      '- Get the schema for a service, event, command or query in EventCatalog',
+      '- Just return the schema and format to the user in a readable format',
+      `- The host URL is ${process.env.EVENTCATALOG_URL}`,
+    ].join('\n'),
+    paramsSchema: {
+      id: z.string().trim().describe('The id of the resource to find'),
+      version: z.string().trim().describe('The version of the resource to find'),
+      type: z.enum(['services', 'events', 'commands', 'queries']).describe('The type of resource to find'),
+    },
   },
   {
-    name: 'get_queries',
-    description: 'Get information about all queries in EventCatalog',
-  },
-  {
-    name: 'get_flows',
-    description: 'Get information about all flows in EventCatalog',
-  },
-  {
-    name: 'get_team',
-    description: 'Get information about a team in EventCatalog',
-  },
-  {
-    name: 'get_teams',
-    description: 'Get information about all teams in EventCatalog',
-  },
-  {
-    name: 'get_user',
-    description: 'Get information about a user in EventCatalog',
-  },
-  {
-    name: 'get_users',
-    description: 'Get information about all users in EventCatalog',
+    name: 'review_schema_changes' as const,
+    description: [
+      'You are an expert in event-driven architecture and you are given a schema for a service, event, command or query in EventCatalog',
+      'You will let the user know if there are any breaking changes to the schema, and suggest a plan to fix them',
+      'The schema format can be anything (e.g. json, yaml, protobuf, etc.)',
+      'Use this tool when you need to:',
+      '- Compare the new schema (given to you) with the old schema and return a list of changes',
+      '- Return a list of changes in a readable format',
+      '- If the new schema is different from the old schema, return a list of changes, if the new schema is the same as the old schema, return an empty list',
+      `- The host URL is ${process.env.EVENTCATALOG_URL}`,
+    ].join('\n'),
+    paramsSchema: {
+      id: z.string().trim().describe('The id of the resource to find'),
+      version: z.string().trim().describe('The version of the resource to find'),
+      type: z.enum(['services', 'events', 'commands', 'queries']).describe('The type of resource to find'),
+      oldSchema: z.string().trim().describe('The old schema to compare to the new schema'),
+      newSchema: z.string().trim().describe('The new schema to compare to the old schema'),
+    },
   },
 ];
 
-const schemaTools = [
-  {
-    name: 'get_event_schema',
-    collection: 'events',
-    file: 'schema.json',
-    description: 'Get the schema for an event',
+const handlers = {
+  find_resources: async (params: any) => {
+    const text = await getEventCatalogResources();
+    return {
+      content: [{ type: 'text', text: text }],
+    };
   },
-  {
-    name: 'get_query_schema',
-    collection: 'queries',
-    file: 'schema.json',
-    description: 'Get the schema for a query',
+  find_resource: async (params: any) => {
+    const id = params.id;
+    const version = params.version || 'latest';
+    const type = params.type;
+    const text = await getResourceInformation(type, id, version);
+    return {
+      content: [{ type: 'text', text: text }],
+    };
   },
-  {
-    name: 'get_command_schema',
-    collection: 'commands',
-    file: 'schema.json',
-    description: 'Get the schema for a command',
+  find_producers_and_consumers: async (params: any) => {
+    const text = await getProducersAndConsumers();
+    return {
+      content: [{ type: 'text', text: text }],
+    };
   },
-  {
-    name: 'get_openapi_spec',
-    file: 'openapi.yml',
-    collection: 'services',
-    description: 'Get the OpenAPI spec for a service',
+  get_schema: async (params: any) => {
+    const text = await getResourceInformation(params.type, params.id, params.version);
+    return {
+      content: [{ type: 'text', text: text }],
+    };
   },
-  {
-    name: 'get_asyncapi_spec',
-    file: 'asyncapi.yml',
-    collection: 'services',
-    description: 'Get the AsyncAPI spec for a service',
+  review_schema_changes: async (params: any) => {
+    return {
+      content: [{ type: 'text', text: '' }],
+    };
   },
-];
+};
 
 export function registerTools(server: McpServer) {
-  tools.forEach((tool) => {
-    server.tool(tool.name, tool.description, {}, async () => {
-      const text = await getEventCatalogResources();
-
-      return {
-        content: [{ type: 'text', text: text }],
-      };
+  for (const tool of TOOL_DEFINITIONS) {
+    const handler = handlers[tool.name];
+    if (!handler) {
+      throw new Error(`Handler for tool ${tool.name} not found`);
+    }
+    // @ts-ignore
+    const paramsSchema = tool.paramsSchema ?? {};
+    // @ts-ignore
+    server.tool(tool.name, tool.description, paramsSchema, async (params: any) => {
+      return handler(params);
     });
-  });
-
-  schemaTools.forEach((tool) => {
-    server.tool(
-      tool.name,
-      tool.description,
-      { resourceName: z.string(), fileName: z.string() },
-      async ({ resourceName, fileName }) => {
-        const baseUrl = process.env.EVENTCATALOG_URL || '';
-        const url = new URL(`/generated/${tool.collection}/${resourceName}/${fileName}`, baseUrl);
-        const response = await fetch(url.toString());
-        if (response.status === 404) {
-          return {
-            content: [{ type: 'text', text: `Schema for ${resourceName} not found` }],
-            isError: true,
-          };
-        }
-        const text = await response.text();
-        return {
-          content: [{ type: 'text', text: text }],
-        };
-      }
-    );
-  });
-
-  // Get Manifest rules
-  // server.tool(
-  //   'get_manifest_rules',
-  //   'Get the standards and governance rules for EventCatalog and event-driven architecture',
-  //   {},
-  //   async () => {
-  //     const text = await getManifestRules();
-  //     return {
-  //       content: [{ type: 'text', text: text }],
-  //     };
-  //   }
-  // );
+  }
 }
