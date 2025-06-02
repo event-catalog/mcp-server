@@ -4,7 +4,7 @@ let cachedResponse: string | null = null;
 const getEventCatalogResources = async () => {
   if (cachedResponse) return cachedResponse;
   const baseUrl = process.env.EVENTCATALOG_URL || '';
-  const url = new URL('/docs/llm/llms-full.txt', baseUrl);
+  const url = new URL('/docs/llm/llms.txt', baseUrl);
   const response = await fetch(url.toString());
   const text = await response.text();
   cachedResponse = text;
