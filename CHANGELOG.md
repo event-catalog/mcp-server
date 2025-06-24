@@ -1,5 +1,11 @@
 # @eventcatalog/mcp-server
 
+## 1.0.3
+
+### Patch Changes
+
+- 42ca897: feat(core): added owners tools
+
 ## 1.0.2
 
 ### Patch Changes
