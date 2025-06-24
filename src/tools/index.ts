@@ -3,6 +3,8 @@ let cachedResponse: string | null = null;
 import fetch from 'node-fetch';
 import { z } from 'zod';
 import { URL } from 'url';
+import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 
 const getEventCatalogResources = async () => {
   if (cachedResponse) return cachedResponse;
@@ -73,6 +75,7 @@ export const TOOL_DEFINITIONS = [
       '- If the resource has a domain, include it in the response',
       '- Ask the user if they would like more information about a specific resource',
       '- When you return a message, in brackets let me know if its a query, command or event',
+      `- If you are returning a flow (state machine) try and return the result in mermaid to the user, visualizing how the business logic flows`,
       `- If you return any URLS make sure to include the host URL ${process.env.EVENTCATALOG_URL}`,
     ].join('\n'),
     paramsSchema: {
@@ -81,6 +84,22 @@ export const TOOL_DEFINITIONS = [
       type: z
         .enum(['services', 'domains', 'events', 'commands', 'queries', 'flows', 'entities'])
         .describe('The type of resource to find'),
+    },
+  },
+  {
+    name: 'find_owners' as const,
+    description: [
+      'Find owners (teams or users) for a domain, services, messages, events, commands, queries, flows or entities in EventCatalog',
+      'Use this tool when you need to:',
+      '- Find owners (teams or users) for a domain, services, messages, events, commands, queries, flows or entities in EventCatalog',
+      '- A resource in eventcatalog can have owners, use that id to find the owners',
+      '- Return everything you know about the owners',
+      '- When you find owners the url would look something like /docs/users/{id} if its a user or /docs/teams/{id} if its a team', 
+      '- When you return owners make sure they include the url to the documentation',
+      `- If you return any URLS make sure to include the host URL ${process.env.EVENTCATALOG_URL}`,
+    ].join('\n'),
+    paramsSchema: {
+      id: z.string().trim().describe('The id of the owner (user or team) to find')
     },
   },
   {
@@ -183,6 +202,12 @@ const handlers = {
   },
   explain_ubiquitous_language_terms: async (params: any) => {
     const text = await getUbiquitousLanguageTerms(params.domain);
+    return {
+      content: [{ type: 'text', text: text }],
+    };
+  },
+  find_owners: async (params: any) => {
+    const text = await getEventCatalogResources();
     return {
       content: [{ type: 'text', text: text }],
     };
