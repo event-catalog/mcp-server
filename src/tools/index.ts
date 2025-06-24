@@ -94,12 +94,12 @@ export const TOOL_DEFINITIONS = [
       '- Find owners (teams or users) for a domain, services, messages, events, commands, queries, flows or entities in EventCatalog',
       '- A resource in eventcatalog can have owners, use that id to find the owners',
       '- Return everything you know about the owners',
-      '- When you find owners the url would look something like /docs/users/{id} if its a user or /docs/teams/{id} if its a team', 
+      '- When you find owners the url would look something like /docs/users/{id} if its a user or /docs/teams/{id} if its a team',
       '- When you return owners make sure they include the url to the documentation',
       `- If you return any URLS make sure to include the host URL ${process.env.EVENTCATALOG_URL}`,
     ].join('\n'),
     paramsSchema: {
-      id: z.string().trim().describe('The id of the owner (user or team) to find')
+      id: z.string().trim().describe('The id of the owner (user or team) to find'),
     },
   },
   {
