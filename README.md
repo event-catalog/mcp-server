@@ -138,6 +138,9 @@ Here is a list of all the APIs that the MCP server supports.
   - Reviews schema changes for breaking changes and suggests fixes.
 - `explain_ubiquitous_language_terms`
   - Explain ubiquitous language terms for a given domain
+- `find_owners`
+  - Find owners (teams or users) for a domain, services, messages, events, commands, queries, flows or entities in EventCatalog
+
 
 ## Resources
 
