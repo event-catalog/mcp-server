@@ -3,8 +3,6 @@ let cachedResponse: string | null = null;
 import fetch from 'node-fetch';
 import { z } from 'zod';
 import { URL } from 'url';
-import Ajv from 'ajv';
-import addFormats from 'ajv-formats';
 
 const getEventCatalogResources = async () => {
   if (cachedResponse) return cachedResponse;
