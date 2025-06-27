@@ -1,5 +1,11 @@
 # @eventcatalog/mcp-server
 
+## 1.1.0
+
+### Minor Changes
+
+- e19192d: feat(core) added create_flow tool to mcp
+
 ## 1.0.3
 
 ### Patch Changes
