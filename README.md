@@ -140,6 +140,10 @@ Here is a list of all the APIs that the MCP server supports.
   - Explain ubiquitous language terms for a given domain
 - `find_owners`
   - Find owners (teams or users) for a domain, services, messages, events, commands, queries, flows or entities in EventCatalog
+- `create_flow`
+  - Create a new flow in EventCatalog given a description of the business workflow.
+  - The tool will check all your resources in EventCatalog to find the best resources to match against the description.
+  - The flow will be created (markdown file) and can be visualized in EventCatalog.
 
 
 ## Resources
