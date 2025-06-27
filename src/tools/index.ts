@@ -3,6 +3,7 @@ let cachedResponse: string | null = null;
 import fetch from 'node-fetch';
 import { z } from 'zod';
 import { URL } from 'url';
+import { prompt as createFlowPrompt } from './flows.js';
 
 const getEventCatalogResources = async () => {
   if (cachedResponse) return cachedResponse;
@@ -163,6 +164,16 @@ export const TOOL_DEFINITIONS = [
       newSchema: z.string().trim().describe('The new schema to compare to the old schema'),
     },
   },
+  {
+    name: 'create_flow' as const,
+    description: createFlowPrompt,
+    paramsSchema: {
+      description: z
+        .string()
+        .trim()
+        .describe('The business process description (e.g., "payment for users", "user registration", "order fulfillment")'),
+    },
+  },
 ];
 
 const handlers = {
@@ -208,6 +219,12 @@ const handlers = {
     const text = await getEventCatalogResources();
     return {
       content: [{ type: 'text', text: text }],
+    };
+  },
+  // noop function?
+  create_flow: async (params: any) => {
+    return {
+      content: [{ type: 'text', text: 'Flow created' }],
     };
   },
 };
