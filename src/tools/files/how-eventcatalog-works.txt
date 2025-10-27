@@ -1,0 +1,896 @@
+# EventCatalog Structure Guide for LLMs
+
+## Introduction
+
+EventCatalog is an open-source project designed to document and visualize event-driven architectures (EDA). It provides a comprehensive way to catalog domains, services, events, commands, queries, channels, and other resources in an event-driven system.
+
+## Project Structure Overview
+
+An EventCatalog project follows this directory structure:
+
+```
+my-catalog/
+├── domains/                    # Domain-driven design domains
+├── channels/                   # Message channels (Kafka topics, SQS queues, etc.)
+├── users/                      # User profiles
+├── teams/                      # Team definitions
+├── pages/                      # Custom documentation pages
+├── components/                 # Custom Astro components
+├── public/                     # Static assets (images, logos, etc.)
+├── eventcatalog.config.js      # Main configuration file
+├── eventcatalog.auth.js        # Authentication configuration
+├── eventcatalog.styles.css     # Custom styles
+├── package.json                # Node.js dependencies
+└── .env                        # Environment variables
+```
+
+## Configuration Files
+
+### eventcatalog.config.js
+
+The main configuration file that defines catalog settings:
+
+```javascript
+export default {
+  title: 'EventCatalog',                    // Catalog title
+  tagline: 'Your tagline here',             // Catalog description
+  organizationName: 'Your Organization',    // Organization name
+  homepageLink: 'https://example.com',      // Homepage URL
+  editUrl: 'https://github.com/...',        // Edit link for pages
+  output: 'static',                         // 'static' or 'server'
+  trailingSlash: false,                     // URL trailing slash
+  base: '/',                                // Base URL path
+  logo: {
+    alt: 'Logo Alt Text',
+    src: '/logo.png',
+    text: 'Logo Text'
+  },
+  docs: {
+    sidebar: {
+      type: 'LIST_VIEW'                     // 'LIST_VIEW' or 'TREE_VIEW'
+    }
+  },
+  rss: {
+    enabled: true,
+    limit: 20
+  },
+  llmsTxt: {
+    enabled: true                           // Enable LLM text export
+  },
+  cId: 'unique-catalog-id'                  // Auto-generated ID
+}
+```
+
+### package.json
+
+Standard Node.js package file with EventCatalog scripts:
+
+```json
+{
+  "scripts": {
+    "dev": "eventcatalog dev",              // Start dev server
+    "build": "eventcatalog build",          // Build static site
+    "start": "eventcatalog start",          // Start production server
+    "preview": "eventcatalog preview",      // Preview built site
+    "generate": "eventcatalog generate"     // Generate catalog
+  },
+  "dependencies": {
+    "@eventcatalog/core": "latest"
+  }
+}
+```
+
+## Core Resource Types
+
+### 1. Domains
+
+**Location:** `/domains/{DomainName}/`
+
+Domains represent bounded contexts in Domain-Driven Design.
+
+**Required Files:**
+- `index.mdx` - Domain definition
+
+**Optional Subdirectories:**
+- `services/` - Services within the domain
+- `entities/` - Domain entities
+- `flows/` - Business process flows
+- `ubiquitous-language.mdx` - Domain terminology
+
+**Example index.mdx:**
+
+```markdown
+---
+id: Payment
+name: Payment
+version: 0.0.1
+summary: |
+  Domain that contains payment related services and messages.
+owners:
+  - dboyne
+services:
+  - id: PaymentService
+  - id: FraudDetectionService
+entities:
+  - id: Invoice
+  - id: Payment
+badges:
+  - content: Payment Domain
+    backgroundColor: blue
+    textColor: blue
+---
+
+## Overview
+
+Domain description here...
+
+<NodeGraph />
+<EntityMap id="Payment" />
+```
+
+**Frontmatter Fields:**
+- `id` (required): Unique identifier
+- `name` (required): Display name
+- `version` (required): Semantic version
+- `summary`: Brief description
+- `owners`: Array of user IDs
+- `services`: Array of service references
+- `entities`: Array of entity references
+- `badges`: Visual badges for the domain
+
+### 2. Services
+
+**Location:** `/domains/{DomainName}/services/{ServiceName}/`
+
+Services represent applications or microservices.
+
+**Required Files:**
+- `index.mdx` - Service definition
+
+**Optional Subdirectories:**
+- `events/` - Events produced/consumed
+- `commands/` - Commands handled
+- `queries/` - Queries handled
+
+**Example index.mdx:**
+
+```markdown
+---
+id: PaymentService
+name: Payment Service
+version: 0.0.1
+summary: |
+  Service that handles payments
+owners:
+  - dboyne
+receives:
+  - id: PaymentInitiated
+  - id: GetPaymentStatus
+sends:
+  - id: PaymentProcessed
+  - id: GetOrder
+repository:
+  language: JavaScript
+  url: https://github.com/org/repo
+---
+
+Service description...
+
+<NodeGraph />
+```
+
+**Frontmatter Fields:**
+- `id` (required): Unique identifier
+- `name` (required): Display name
+- `version` (required): Semantic version
+- `summary`: Brief description
+- `owners`: Array of user IDs
+- `receives`: Messages this service consumes
+- `sends`: Messages this service produces
+- `repository`: Git repository information
+  - `language`: Programming language
+  - `url`: Repository URL
+
+### 3. Events
+
+**Location:** `/domains/{DomainName}/services/{ServiceName}/events/{EventName}/`
+
+Events represent state changes or notifications.
+
+**Required Files:**
+- `index.mdx` - Event definition
+
+**Optional Files:**
+- `schema.json` - JSON Schema for the event
+
+**Example index.mdx:**
+
+```markdown
+---
+id: PaymentProcessed
+name: Payment Processed
+version: 1.0.0
+summary: Event is triggered after the payment has been successfully processed
+owners:
+  - dboyne
+channels:
+  - id: payments.{env}.events
+    parameters:
+      env: staging
+---
+
+## Overview
+
+Event description...
+
+<NodeGraph />
+
+### Payload Example
+
+\`\`\`json title="Payload example"
+{
+  "transactionId": "123e4567-e89b-12d3-a456-426614174000",
+  "amount": 100.50,
+  "status": "confirmed"
+}
+\`\`\`
+```
+
+**Frontmatter Fields:**
+- `id` (required): Event identifier
+- `name` (required): Display name
+- `version` (required): Semantic version
+- `summary`: Brief description
+- `owners`: Array of user IDs
+- `channels`: Array of channel references with parameters
+
+### 4. Commands
+
+**Location:** `/domains/{DomainName}/services/{ServiceName}/commands/{CommandName}/`
+
+Commands represent requests to perform actions.
+
+**Required Files:**
+- `index.mdx` - Command definition
+
+**Optional Files:**
+- `schema.json` - JSON Schema for the command
+
+**Example index.mdx:**
+
+```markdown
+---
+id: ProcessPayment
+version: 0.0.1
+name: Process Payment
+summary: Command to process a payment through the payment gateway
+tags:
+  - payment
+  - command
+badges:
+  - content: Command
+    backgroundColor: blue
+    textColor: white
+schemaPath: schema.json
+---
+
+## Overview
+
+Command description...
+
+<SchemaViewer title="ProcessPayment Schema" schemaPath={frontmatter.schemaPath} />
+```
+
+**Frontmatter Fields:**
+- `id` (required): Command identifier
+- `name` (required): Display name
+- `version` (required): Semantic version
+- `summary`: Brief description
+- `tags`: Array of tags
+- `badges`: Visual badges
+- `schemaPath`: Path to schema file
+
+### 5. Queries
+
+**Location:** `/domains/{DomainName}/services/{ServiceName}/queries/{QueryName}/`
+
+Queries represent data retrieval requests.
+
+**Structure:** Same as Commands (index.mdx + optional schema.json)
+
+### 6. Channels
+
+**Location:** `/channels/{ChannelName}/`
+
+Channels represent message transport mechanisms (Kafka topics, SQS queues, etc.).
+
+**Required Files:**
+- `index.mdx` - Channel definition
+
+**Example index.mdx:**
+
+```markdown
+---
+id: orders.{env}.events
+name: Order Events Channel
+version: 1.0.1
+summary: |
+  Central event stream for all order-related events
+owners:
+  - dboyne
+address: orders.{env}.events
+protocols:
+  - kafka
+parameters:
+  env:
+    enum:
+      - dev
+      - sit
+      - prod
+    description: 'Environment to use'
+---
+
+### Overview
+
+Channel description...
+
+<ChannelInformation />
+```
+
+**Frontmatter Fields:**
+- `id` (required): Channel identifier (can include parameters like {env})
+- `name` (required): Display name
+- `version` (required): Semantic version
+- `summary`: Brief description
+- `owners`: Array of user IDs
+- `address`: Physical address/topic name
+- `protocols`: Array of protocols (kafka, sqs, sns, etc.)
+- `parameters`: Parameter definitions for dynamic channels
+
+### 7. Entities
+
+**Location:** `/domains/{DomainName}/entities/{EntityName}/`
+
+Entities represent domain data models.
+
+**Required Files:**
+- `index.mdx` - Entity definition
+
+**Example index.mdx:**
+
+```markdown
+---
+id: Payment
+name: Payment
+version: 1.0.0
+identifier: paymentId
+aggregateRoot: true
+summary: Represents payment transactions
+properties:
+  - name: paymentId
+    type: UUID
+    required: true
+    description: Unique identifier for the payment
+  - name: orderId
+    type: UUID
+    required: true
+    description: Order this payment is associated with
+    references: Order
+    referencesIdentifier: orderId
+    relationType: hasOne
+  - name: amount
+    type: decimal
+    required: true
+    description: Payment amount
+  - name: status
+    type: string
+    required: true
+    enum: ['pending', 'processing', 'completed', 'failed']
+---
+
+## Overview
+
+Entity description...
+
+<EntityPropertiesTable />
+```
+
+**Frontmatter Fields:**
+- `id` (required): Entity identifier
+- `name` (required): Display name
+- `version` (required): Semantic version
+- `identifier`: Primary key field name
+- `aggregateRoot`: Boolean indicating if this is an aggregate root
+- `summary`: Brief description
+- `properties`: Array of property definitions
+  - `name`: Property name
+  - `type`: Data type (UUID, string, decimal, DateTime, etc.)
+  - `required`: Boolean
+  - `description`: Property description
+  - `references`: Referenced entity name
+  - `referencesIdentifier`: Referenced entity's identifier field
+  - `relationType`: Relationship type (hasOne, hasMany)
+  - `enum`: Array of allowed values
+  - `properties`: Nested properties for object types
+
+### 8. Flows
+
+**Location:** `/domains/{DomainName}/flows/{FlowName}/`
+
+Flows represent business processes and workflows.
+
+**Required Files:**
+- `index.mdx` - Flow definition
+
+**Example index.mdx:**
+
+```markdown
+---
+id: PaymentFlow
+name: Payment Flow for customers
+version: 1.0.0
+summary: Business flow for processing payments
+steps:
+  - id: "customer_place_order"
+    title: Customer places order
+    next_step: "place_order_request"
+  - id: "place_order_request"
+    title: Place order
+    message:
+      id: PlaceOrder
+      version: 0.0.1
+    next_step:
+      id: "payment_initiated"
+      label: Initiate payment
+  - id: "payment_initiated"
+    title: Payment Initiated
+    message:
+      id: PaymentInitiated
+      version: 0.0.1
+    next_steps:
+      - "payment_processed"
+      - "payment_failed"
+---
+
+### Flow of feature
+<NodeGraph/>
+```
+
+**Frontmatter Fields:**
+- `id` (required): Flow identifier
+- `name` (required): Display name
+- `version` (required): Semantic version
+- `summary`: Brief description
+- `steps`: Array of flow steps
+  - `id`: Step identifier
+  - `title`: Step title
+  - `type`: Node type (default is message node)
+  - `message`: Message reference (id and version)
+  - `next_step`: Single next step (string or object with id and label)
+  - `next_steps`: Multiple next steps (array)
+
+### 9. Users
+
+**Location:** `/users/{userId}.mdx`
+
+User profiles for resource ownership.
+
+**Example:**
+
+```markdown
+---
+id: dboyne
+name: David Boyne
+avatarUrl: "https://example.com/avatar.png"
+role: Lead developer
+email: test@test.com
+slackDirectMessageUrl: https://yourteam.slack.com/channels/user
+---
+
+User bio and description...
+```
+
+**Frontmatter Fields:**
+- `id` (required): User identifier
+- `name` (required): Full name
+- `avatarUrl`: (required) Profile image URL
+- `role`: Job title/role
+- `email`: Email address
+- `slackDirectMessageUrl`: Slack DM link
+
+### 10. Teams
+
+**Location:** `/teams/{teamId}.mdx`
+
+Team definitions for grouping users.
+
+**Example:**
+
+```markdown
+---
+id: full-stack
+name: Full stackers
+summary: Full stack developers based in London, UK
+members:
+  - dboyne
+  - asmith
+email: team@test.com
+slackDirectMessageUrl: https://yourteam.slack.com/channels/team
+---
+
+## Overview
+
+Team description...
+```
+
+**Frontmatter Fields:**
+- `id` (required): Team identifier
+- `name` (required): Team name
+- `summary`: Brief description
+- `members`: Array of user IDs
+- `email`: Team email
+- `slackDirectMessageUrl`: Slack channel link
+
+### 11. Pages
+
+**Location:** `/pages/{pageName}.mdx`
+
+Custom documentation pages.
+
+**Example:**
+
+```markdown
+---
+id: index
+---
+
+# EventCatalog
+
+Custom page content...
+```
+
+### 12. Components
+
+**Location:** `/components/{componentName}.astro`
+
+Custom Astro components for use in MDX files.
+
+**Example:**
+
+```astro
+---
+// Component logic
+---
+<div>
+  Component template
+</div>
+```
+
+## Schema Files
+
+Schemas are JSON Schema files that define message structure.
+
+**Location:**
+- `{ResourcePath}/schema.json` - Current version schema
+- `{ResourcePath}/versioned/{version}/schema.json` - Versioned schema
+
+**Example schema.json:**
+
+```json
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "paymentId": {
+      "type": "string",
+      "description": "Unique identifier for this payment"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Payment amount"
+    }
+  },
+  "required": ["paymentId", "amount"]
+}
+```
+
+## Versioning
+
+EventCatalog supports versioning for all resources:
+
+1. **Version in Frontmatter:** Every resource has a `version` field
+2. **Versioned Directory:** For events/commands/queries with schemas:
+   - Create `/versioned/{version}/` directory
+   - Add version-specific files (schema.json, index.mdx)
+
+**Example:**
+```
+PaymentProcessed/
+├── index.mdx (current version)
+├── schema.json (current schema)
+└── versioned/
+    ├── 0.0.1/
+    │   ├── index.mdx
+    │   └── schema.json
+    └── 1.0.0/
+        ├── index.mdx
+        └── schema.json
+```
+
+## Built-in Components
+
+EventCatalog provides several built-in components for MDX files:
+
+- `<NodeGraph />` - Visualizes relationships and dependencies
+- `<EntityMap id="DomainName" />` - Shows entity relationships in a domain
+- `<SchemaViewer title="Title" schemaPath="schema.json" />` - Displays JSON Schema
+- `<ChannelInformation />` - Shows channel details
+- `<EntityPropertiesTable />` - Displays entity properties table
+
+## Ubiquitous Language
+
+**Location:** `/domains/{DomainName}/ubiquitous-language.mdx`
+
+Defines domain-specific terminology.
+
+**Example:**
+
+```markdown
+---
+dictionary:
+  - id: Transaction
+    name: Transaction
+    summary: "The process of transferring funds"
+    icon: CreditCard
+    description: |
+      Detailed description...
+  - id: Invoice
+    name: Invoice
+    summary: "Document requesting payment"
+    icon: CreditCard
+---
+```
+
+## How to Create Resources
+
+### Creating a Domain
+
+1. Create directory: `/domains/{DomainName}/`
+2. Create `index.mdx` with required frontmatter
+3. Add domain description in markdown
+4. Optionally add subdirectories: `services/`, `entities/`, `flows/`
+5. Optionally create `ubiquitous-language.mdx`
+
+### Creating a Service
+
+1. Create directory: `/domains/{DomainName}/services/{ServiceName}/`
+2. Create `index.mdx` with required frontmatter
+3. Define `receives` and `sends` arrays for messages
+4. Add service description
+5. Optionally add `events/`, `commands/`, `queries/` subdirectories
+
+### Creating an Event
+
+1. Create directory: `/domains/{DomainName}/services/{ServiceName}/events/{EventName}/`
+2. Create `index.mdx` with required frontmatter
+3. Optionally create `schema.json` for the event payload
+4. For versioning, create `/versioned/{version}/` directories
+5. Reference channels in frontmatter if published to specific channels
+
+### Creating a Command/Query
+
+1. Create directory: `/domains/{DomainName}/services/{ServiceName}/commands/{CommandName}/`
+   (or `/queries/` for queries)
+2. Create `index.mdx` with required frontmatter
+3. Optionally create `schema.json` for the payload
+4. Use `<SchemaViewer />` component to display schema
+
+### Creating a Channel
+
+1. Create directory: `/channels/{ChannelName}/`
+2. Create `index.mdx` with required frontmatter
+3. Define protocols (kafka, sqs, sns, etc.)
+4. Add parameters for dynamic channel names (e.g., {env})
+5. Document how to publish/subscribe
+
+### Creating an Entity
+
+1. Create directory: `/domains/{DomainName}/entities/{EntityName}/`
+2. Create `index.mdx` with required frontmatter
+3. Define all properties with types and relationships
+4. Use `references` and `relationType` for entity relationships
+5. Add `<EntityPropertiesTable />` component
+
+### Creating a Flow
+
+1. Create directory: `/domains/{DomainName}/flows/{FlowName}/`
+2. Create `index.mdx` with required frontmatter
+3. Define steps array with message references
+4. Connect steps using `next_step` or `next_steps`
+5. Add `<NodeGraph />` to visualize the flow
+
+### Creating Users and Teams
+
+1. For users: Create `/users/{userId}.mdx`
+2. For teams: Create `/teams/{teamId}.mdx`
+3. Add required frontmatter
+4. Reference users in `owners` fields throughout the catalog
+
+## Relationships and References
+
+### Message Relationships
+
+In services, reference messages in `receives` and `sends`:
+
+```yaml
+receives:
+  - id: EventName
+    version: 1.0.0
+sends:
+  - id: EventName
+    version: 1.0.0
+```
+
+### Channel References
+
+In events/commands, reference channels:
+
+```yaml
+channels:
+  - id: orders.{env}.events
+    parameters:
+      env: prod
+```
+
+### Entity Relationships
+
+In entity properties, reference other entities:
+
+```yaml
+properties:
+  - name: orderId
+    type: UUID
+    references: Order
+    referencesIdentifier: orderId
+    relationType: hasOne
+```
+
+### Domain-Service Relationships
+
+In domains, reference services:
+
+```yaml
+services:
+  - id: PaymentService
+    version: 0.0.1
+```
+
+## Best Practices
+
+1. **Consistent Naming:**
+   - Use PascalCase for resource IDs (PaymentService, OrderCreated)
+   - Use kebab-case for file/directory names (payment-service, order-created)
+
+2. **Versioning:**
+   - Always specify versions in frontmatter
+   - Use semantic versioning (major.minor.patch)
+   - Create versioned directories for breaking changes
+
+3. **Ownership:**
+   - Always assign owners to resources
+   - Create user profiles before referencing them
+
+4. **Documentation:**
+   - Write clear summaries in frontmatter
+   - Add detailed descriptions in markdown body
+   - Include examples and use cases
+
+5. **Schemas:**
+   - Use JSON Schema for all events/commands/queries
+   - Include descriptions for all fields
+   - Mark required fields explicitly
+
+6. **Relationships:**
+   - Always specify versions when referencing other resources
+   - Use proper relationship types (hasOne, hasMany)
+   - Document entity relationships clearly
+
+7. **Components:**
+   - Use built-in components for visualization
+   - Import custom components from `@catalog/components/`
+   - Keep components reusable
+
+8. **Organization:**
+   - Group related services in domains
+   - Keep domain boundaries clear
+   - Use flows to document cross-domain processes
+
+## Common Patterns
+
+### Cross-Domain Communication
+
+When a service in one domain sends events to another domain:
+
+```markdown
+# In Subscriptions domain
+---
+id: BillingService
+sends:
+  - id: SubscriptionPaymentDue
+---
+
+# Reference command from Payment domain
+Triggers `ProcessPayment` command in Payment domain
+```
+
+### Parameterized Channels
+
+For environment-specific channels:
+
+```markdown
+---
+id: orders.{env}.events
+parameters:
+  env:
+    enum:
+      - dev
+      - staging
+      - prod
+---
+```
+
+### Complex Entity Relationships
+
+```yaml
+properties:
+  - name: refunds
+    type: array
+    items:
+      type: PaymentRefund
+    relationType: hasMany
+```
+
+## File Format Summary
+
+- **MDX Files:** Markdown with frontmatter and React components
+- **Frontmatter:** YAML between `---` delimiters
+- **Schemas:** JSON Schema (draft-07)
+- **Config:** JavaScript ES modules
+
+## Generating the Catalog
+
+Run these commands to work with EventCatalog:
+
+```bash
+npm run dev        # Start development server (http://localhost:3000)
+npm run build      # Build static site to /out directory
+npm run preview    # Preview built site
+npm run generate   # Run generators (if configured)
+```
+
+## Key Takeaways for LLMs
+
+1. **Every resource needs:**
+   - Unique `id`
+   - Display `name`
+   - Semantic `version`
+   - At least one `owner`
+
+2. **File structure matters:**
+   - Resources are directory-based
+   - index.mdx is always the main file
+   - Schemas go in same directory or versioned subdirectories
+
+3. **Relationships are explicit:**
+   - Reference resources by `id` and `version`
+   - Use proper frontmatter fields for relationships
+
+4. **Use components:**
+   - `<NodeGraph />` for visualizations
+   - `<SchemaViewer />` for schemas
+   - Built-in components enhance documentation
+
+5. **Maintain consistency:**
+   - Follow naming conventions
+   - Keep structure organized
+   - Document thoroughly

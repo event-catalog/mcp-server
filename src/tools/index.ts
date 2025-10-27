@@ -2,8 +2,16 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 let cachedResponse: string | null = null;
 import fetch from 'node-fetch';
 import { z } from 'zod';
-import { URL } from 'url';
+import { fileURLToPath, URL } from 'url';
 import { prompt as createFlowPrompt } from './flows.js';
+import path, { dirname } from 'path';
+import fs from 'fs';
+
+// Recreate __filename and __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const howEventCatalogWorks = fs.readFileSync(path.join(__dirname, './files/how-eventcatalog-works.txt'), 'utf8');
 
 const getEventCatalogResources = async () => {
   if (cachedResponse) return cachedResponse;
@@ -102,6 +110,28 @@ export const TOOL_DEFINITIONS = [
     },
   },
   {
+    name: 'eventstorm_to_eventcatalog' as const,
+    description: [
+      'Turn the given photo of an EventStorm session (https://en.wikipedia.org/wiki/Event_storming) into an EventCatalog',
+      'EventCatalog has concepts of domains, subdomains, services, events, commands, queries, flows, ubiquitous language and entities.',
+      'Use this tool when you need to:',
+      '- Turn the given photo of an EventStorm session into an EventCatalog',
+      '- You will create a new folder called eventcatalog and put the files in there',
+      '- You will use the zod types given to you to work out the relationships between all the resources',
+      '- Example relationships: a service can send or receive messages',
+      '- Example relationships: a domain can have subdomains, a domain can have services, a domain can have ubiquitous language terms, a domain can have entities',
+      '- Example relationships: a subdomain can have services, a subdomain can have ubiquitous language terms, a subdomain can have entities',
+      '- All resources also can have owners',
+      '- Write markdown files (MDX) for each resource. The markdown page will be called index.mdx, each markdown page will have frontmatter in it',
+      '- Folder structure looks like this (example): domains/MyDomain/index.mdx, or service look likes /domains/MyDomain/services/MyService/index.mdx, or if no domain looks like services/MyService/index.mdx',
+      `- Include the <NodeGraph /> component in the markdown filess `,
+      '- Also try and add some descriptions etc to the markdown files',
+    ].join('\n'),
+    paramsSchema: {
+      photo: z.string().trim().describe('The photo of the event storm session to turn into an EventCatalog'),
+    },
+  },
+  {
     name: 'explain_ubiquitous_language_terms' as const,
     description: [
       'Explain ubiquitous language terms',
@@ -174,6 +204,17 @@ export const TOOL_DEFINITIONS = [
         .describe('The business process description (e.g., "payment for users", "user registration", "order fulfillment")'),
     },
   },
+  {
+    name: 'create_eventcatalog' as const,
+    description: [
+      'You are tasked to create a new EventCatalog for the user given the context they have given you.',
+      'EventCatalog is an open source tool to help people document their event-driven architecture.',
+      'You will create a new folder in their directory called eventcatalog and put the files in there',
+      'You will use the given context to learn how to create the EventCatalog',
+      'You must always remember to create the package.json for them and also the eventcatalog.config.ts file',
+      'Before you are finished, verify you have all the required files and folders in the eventcatalog folder',
+    ].join('\n'),
+  },
 ];
 
 const handlers = {
@@ -221,10 +262,20 @@ const handlers = {
       content: [{ type: 'text', text: text }],
     };
   },
+  eventstorm_to_eventcatalog: async (params: any) => {
+    return {
+      content: [{ type: 'text', text: howEventCatalogWorks }],
+    };
+  },
   // noop function?
   create_flow: async (params: any) => {
     return {
       content: [{ type: 'text', text: 'Flow created' }],
+    };
+  },
+  create_eventcatalog: async (params: any) => {
+    return {
+      content: [{ type: 'text', text: howEventCatalogWorks }],
     };
   },
 };
