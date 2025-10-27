@@ -1,5 +1,11 @@
 # @eventcatalog/mcp-server
 
+## 1.2.0
+
+### Minor Changes
+
+- b0265f9: feat(mcp): added new tool to convert eventstorm into a catalog
+
 ## 1.1.0
 
 ### Minor Changes
