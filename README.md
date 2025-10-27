@@ -194,40 +194,6 @@ Example for Cursor:
   }
 }
 ```
-# Sponsors
-
-Thank you to our project sponsors.
-
-## Gold sponsors
-
-<div align="center">
-  <picture>
-    <source srcset="./images/sponsors/gravitee-logo-white.webp" media="(prefers-color-scheme: dark)" />
-    <img alt="hookdeck" src="./images/sponsors/gravitee-logo-black.svg" width="50%" />
-  </picture>
-  <p style="margin: 0; padding: 0;">Manage, secure, and govern every API in your organization</p>
-  <a href="https://gravitee.io?utm_source=eventcatalog&utm_medium=web&utm_campaign=sponsorship" target="_blank">Learn more</a>
-</div>
-
-<hr />
-
-<div align="center">
-  <img alt="oso" src="./images/sponsors/oso-logo-green.png" width="30%" />
-  <p style="margin: 0; padding: 0;">Delivering Apache Kafka professional services to your business
-</p>
-  <a href="https://oso.sh/?utm_source=eventcatalog&utm_medium=web&utm_campaign=sponsorship" target="_blank" >Learn more</a>
-</div>
-
-<hr />
-
-_Sponsors help make EventCatalog sustainable, want to help the project? Get in touch! Or [visit our sponsor page](https://www.eventcatalog.dev/support)._
-
-# Enterprise support
-
-Interested in collaborating with us? Our offerings include dedicated support, priority assistance, feature development, custom integrations, and more.
-
-Find more details on our [services page](https://eventcatalog.dev/services).
-
 # License
 
-Usage of this feature is part of the [EventCatalog Pro Edition](https://www.eventcatalog.dev/pricing)
+Usage of this feature is part of the [EventCatalog Scale Plan](https://www.eventcatalog.dev/pricing)
