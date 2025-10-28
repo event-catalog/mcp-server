@@ -31,6 +31,25 @@ const getResourceInformation = async (type: string, id: string, version: string)
   return text;
 };
 
+const getSchema = async (type: string, id: string, version: string, specification?: string) => {
+  const baseUrl = process.env.EVENTCATALOG_URL || '';
+  let url = new URL(`/api/schemas/${type}/${id}/${version}`, baseUrl);
+  if (specification) {
+    url = new URL(`/api/schemas/${type}/${id}/${version}/${specification}`, baseUrl);
+  }
+  const response = await fetch(url.toString());
+  const text = await response.text();
+  return text;
+};
+
+const getSchemaList = async () => {
+  const baseUrl = process.env.EVENTCATALOG_URL || '';
+  const url = new URL(`/docs/llm/schemas.txt`, baseUrl);
+  const response = await fetch(url.toString());
+  const text = await response.text();
+  return text;
+};
+
 const getUbiquitousLanguageTerms = async (domain: string) => {
   const baseUrl = process.env.EVENTCATALOG_URL || '';
   const url = new URL(`docs/domains/${domain}/language.mdx`, baseUrl);
@@ -164,7 +183,7 @@ export const TOOL_DEFINITIONS = [
     description: [
       'Returns the schema for a service, event, command or query in EventCatalog',
       'Use this tool when you need to:',
-      '- Get the schema for a service, event, command or query in EventCatalog',
+      '- Get a schema for a given service, event, command or query in EventCatalog',
       '- Just return the schema and format to the user in a readable format',
       `- The host URL is ${process.env.EVENTCATALOG_URL}`,
     ].join('\n'),
@@ -172,7 +191,23 @@ export const TOOL_DEFINITIONS = [
       id: z.string().trim().describe('The id of the resource to find'),
       version: z.string().trim().describe('The version of the resource to find'),
       type: z.enum(['services', 'events', 'commands', 'queries']).describe('The type of resource to find'),
+      specification: z
+        .union([z.literal('asyncapi'), z.literal('openapi'), z.literal('graphql')])
+        .describe('The specification of the resource to find the resource is a service')
+        .optional(),
     },
+  },
+  {
+    name: 'get_schema_list' as const,
+    description: [
+      'Returns the list of all schemas in EventCatalog',
+      'Use this tool when you need to:',
+      '- Figure out what schemas are available in EventCatalog',
+      '- Returning a list of schemas for the user to choose from',
+      '- Checking if a resource has many different versions of the schema',
+      '- Return the information in a readable format, let the user dive deeper if they want to, the get_schema tool can be used to get more information about a specific schema',
+      `- The host URL is ${process.env.EVENTCATALOG_URL}`,
+    ].join('\n'),
   },
   {
     name: 'review_schema_changes' as const,
@@ -240,7 +275,13 @@ const handlers = {
     };
   },
   get_schema: async (params: any) => {
-    const text = await getResourceInformation(params.type, params.id, params.version);
+    const text = await getSchema(params.type, params.id, params.version, params.specification);
+    return {
+      content: [{ type: 'text', text: text }],
+    };
+  },
+  get_schema_list: async (params: any) => {
+    const text = await getSchemaList();
     return {
       content: [{ type: 'text', text: text }],
     };
