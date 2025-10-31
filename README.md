@@ -133,7 +133,9 @@ Here is a list of all the APIs that the MCP server supports.
 - `find_producers_and_consumers`
   - Get the producers (sends) and consumers (receives) for a service in EventCatalog
 - `get_schema`
-  - Returns the schema for a service, event, command or query in EventCatalog
+  - Returns the schema for a service (e.g OpenAPI, AsyncAPI, GraphQL), event, command or query in EventCatalog
+- `get_schemas`
+  - Returns list of schemas for services (e.g OpenAPI, AsyncAPI, GraphQL), events, commands or queries
 - `review_schema_changes`
   - Reviews schema changes for breaking changes and suggests fixes.
 - `explain_ubiquitous_language_terms`
