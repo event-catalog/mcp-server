@@ -6,6 +6,9 @@ import { fileURLToPath, URL } from 'url';
 import { prompt as createFlowPrompt } from './flows.js';
 import path, { dirname } from 'path';
 import fs from 'fs';
+import { parseLlmsTxt } from '../parser.js';
+import { encodeCursor, decodeCursor, InvalidCursorError } from '../cursor.js';
+import type { ParsedResource, ResourceFilter } from '../types.js';
 
 // Recreate __filename and __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -47,6 +50,61 @@ const getProducersAndConsumers = async () => {
   return text;
 };
 
+const DEFAULT_PAGE_SIZE = 50;
+
+/**
+ * Filter and paginate resources - exported for testing
+ * Throws InvalidCursorError if cursor is invalid (MCP error code -32602)
+ */
+export function filterAndPaginateResources(
+  resources: ParsedResource[],
+  params: { type?: ResourceFilter; search?: string; cursor?: string }
+): { resources: ParsedResource[]; nextCursor?: string } {
+  let filtered = resources;
+
+  // Filter by type
+  const filterType = params.type ?? 'all';
+  if (filterType !== 'all') {
+    filtered = filtered.filter((r) => r.type === filterType);
+  }
+
+  // Filter by search term (case-insensitive)
+  if (params.search) {
+    const searchLower = params.search.toLowerCase();
+    filtered = filtered.filter(
+      (r) =>
+        r.name.toLowerCase().includes(searchLower) ||
+        r.id.toLowerCase().includes(searchLower) ||
+        (r.summary && r.summary.toLowerCase().includes(searchLower))
+    );
+  }
+
+  // Pagination
+  let startIndex = 0;
+  if (params.cursor) {
+    const decoded = decodeCursor(params.cursor);
+    if (decoded === null) {
+      throw new InvalidCursorError();
+    }
+    startIndex = decoded;
+  }
+
+  const pageSize = DEFAULT_PAGE_SIZE;
+  const endIndex = startIndex + pageSize;
+  const pageResources = filtered.slice(startIndex, endIndex);
+  const hasMore = endIndex < filtered.length;
+
+  const result: { resources: ParsedResource[]; nextCursor?: string } = {
+    resources: pageResources,
+  };
+
+  if (hasMore) {
+    result.nextCursor = encodeCursor(endIndex);
+  }
+
+  return result;
+}
+
 export const TOOL_DEFINITIONS = [
   {
     name: 'find_resources' as const,
@@ -66,6 +124,23 @@ export const TOOL_DEFINITIONS = [
       '- When you return a message, in brackets let me know if its a query, command or event',
       `- The host URL is ${process.env.EVENTCATALOG_URL}`,
     ].join('\n'),
+    paramsSchema: {
+      type: z
+        .enum(['event', 'command', 'query', 'service', 'domain', 'flow', 'entity', 'channel', 'team', 'user', 'doc', 'all'])
+        .optional()
+        .default('all')
+        .describe('Filter resources by type. Defaults to "all".'),
+      search: z
+        .string()
+        .trim()
+        .optional()
+        .describe('Search term to filter resources by name, id, or summary (case-insensitive)'),
+      cursor: z
+        .string()
+        .trim()
+        .optional()
+        .describe('Pagination cursor from previous response'),
+    },
   },
   {
     name: 'find_resource' as const,
@@ -218,10 +293,14 @@ export const TOOL_DEFINITIONS = [
 ];
 
 const handlers = {
-  find_resources: async (params: any) => {
+  find_resources: async (params: { type?: ResourceFilter; search?: string; cursor?: string }) => {
     const text = await getEventCatalogResources();
+    const resources = parseLlmsTxt(text);
+    // InvalidCursorError will propagate up with MCP error code -32602
+    const result = filterAndPaginateResources(resources, params);
+
     return {
-      content: [{ type: 'text', text: text }],
+      content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
     };
   },
   find_resource: async (params: any) => {
