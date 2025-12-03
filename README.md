@@ -179,8 +179,20 @@ We are working on adding more APIs to the MCP server. If you need something spec
 ## Contributing
 
 1. Clone the repository
-2. Run `pnpm install` to install the dependencies
-3. Run `pnpm run build`
+2. Run `npm install` to install the dependencies
+3. Run `npm run build`
+
+### Running Tests
+
+```bash
+npm test
+```
+
+To run tests with coverage:
+
+```bash
+npm test:coverage
+```
 
 To use the build as your MCP server you can point your MCP client to the `dist` folder.
 
