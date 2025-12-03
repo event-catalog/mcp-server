@@ -1,16 +1,35 @@
-import type { ParsedResource, ResourceKind } from '../types.js';
+import type { ParsedResource, ResourceKind, PluralResourceKind } from '../types.js';
 
 /**
- * Filter resources by type
+ * Map plural type to singular for filtering
+ */
+export const pluralToSingular: Record<PluralResourceKind, ResourceKind> = {
+  events: 'event',
+  commands: 'command',
+  queries: 'query',
+  services: 'service',
+  domains: 'domain',
+  flows: 'flow',
+  entities: 'entity',
+  channels: 'channel',
+  teams: 'team',
+  users: 'user',
+  docs: 'doc',
+};
+
+/**
+ * Filter resources by type (accepts both singular and plural)
  */
 export function filterByType(
   resources: ParsedResource[],
-  type: ResourceKind | 'all'
+  type: ResourceKind | PluralResourceKind | 'all'
 ): ParsedResource[] {
   if (type === 'all') {
     return resources;
   }
-  return resources.filter((r) => r.type === type);
+  // Convert plural to singular if needed
+  const singularType = (pluralToSingular as Record<string, ResourceKind>)[type] || type;
+  return resources.filter((r) => r.type === singularType);
 }
 
 /**

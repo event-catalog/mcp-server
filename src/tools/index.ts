@@ -7,7 +7,7 @@ import path, { dirname } from 'path';
 import fs from 'fs';
 import { encodeCursor, decodeCursor, InvalidCursorError } from '../cursor.js';
 import { fetchParsedResources, fetchOwnerById } from '../utils/fetch.js';
-import { filterByType, filterBySearch } from '../utils/filter.js';
+import { filterByType, filterBySearch, pluralToSingular } from '../utils/filter.js';
 import type { ParsedResource, ResourceFilter } from '../types.js';
 
 // Recreate __filename and __dirname
@@ -106,7 +106,7 @@ export const TOOL_DEFINITIONS = [
     ].join('\n'),
     paramsSchema: {
       type: z
-        .enum(['event', 'command', 'query', 'service', 'domain', 'flow', 'entity', 'channel', 'team', 'user', 'doc', 'all'])
+        .enum(['events', 'commands', 'queries', 'services', 'domains', 'flows', 'entities', 'channels', 'teams', 'users', 'docs', 'all'])
         .optional()
         .default('all')
         .describe('Filter resources by type. Defaults to "all".'),
@@ -142,9 +142,9 @@ export const TOOL_DEFINITIONS = [
     ].join('\n'),
     paramsSchema: {
       id: z.string().trim().describe('The id of the resource to find'),
-      version: z.string().trim().describe('The version of the resource to find'),
+      version: z.string().trim().optional().describe('The version of the resource to find. If not provided, uses the latest version from the catalog.'),
       type: z
-        .enum(['services', 'domains', 'events', 'commands', 'queries', 'flows', 'entities'])
+        .enum(['services', 'domains', 'events', 'commands', 'queries', 'flows', 'entities', 'channels'])
         .describe('The type of resource to find'),
     },
   },
@@ -226,7 +226,9 @@ export const TOOL_DEFINITIONS = [
     paramsSchema: {
       id: z.string().trim().describe('The id of the resource to find'),
       version: z.string().trim().describe('The version of the resource to find'),
-      type: z.enum(['services', 'events', 'commands', 'queries']).describe('The type of resource to find'),
+      type: z
+        .enum(['services', 'domains', 'events', 'commands', 'queries', 'flows', 'entities', 'channels'])
+        .describe('The type of resource to find'),
     },
   },
   {
@@ -244,7 +246,9 @@ export const TOOL_DEFINITIONS = [
     paramsSchema: {
       id: z.string().trim().describe('The id of the resource to find'),
       version: z.string().trim().describe('The version of the resource to find'),
-      type: z.enum(['services', 'events', 'commands', 'queries']).describe('The type of resource to find'),
+      type: z
+        .enum(['services', 'domains', 'events', 'commands', 'queries', 'flows', 'entities', 'channels'])
+        .describe('The type of resource to find'),
       oldSchema: z.string().trim().describe('The old schema to compare to the new schema'),
       newSchema: z.string().trim().describe('The new schema to compare to the old schema'),
     },
@@ -284,8 +288,24 @@ const handlers = {
   },
   find_resource: async (params: any) => {
     const id = params.id;
-    const version = params.version || 'latest';
+    let version = params.version;
     const type = params.type;
+
+    // If no version provided, look up the latest from llms.txt
+    if (!version || version === 'latest') {
+      const resources = await fetchParsedResources();
+      const singularType = (pluralToSingular as Record<string, string>)[type] || type;
+      const resource = resources.find((r) => r.id === id && r.type === singularType);
+      if (resource && 'version' in resource) {
+        version = resource.version;
+      } else {
+        return {
+          content: [{ type: 'text', text: JSON.stringify({ error: 'Resource not found', id, type }) }],
+          isError: true,
+        };
+      }
+    }
+
     const text = await getResourceInformation(type, id, version);
     return {
       content: [{ type: 'text', text: text }],

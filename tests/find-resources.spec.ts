@@ -258,23 +258,23 @@ describe('find_resources tool definition', () => {
     expect(schema.cursor).toBeDefined();
   });
 
-  it('type param accepts all valid resource types', async () => {
+  it('type param accepts all valid resource types (plural)', async () => {
     const { TOOL_DEFINITIONS } = await import('../src/tools/index.js');
     const tool = TOOL_DEFINITIONS.find((t) => t.name === 'find_resources');
     const typeSchema = tool!.paramsSchema!.type;
 
     const validTypes = [
-      'event',
-      'command',
-      'query',
-      'service',
-      'domain',
-      'flow',
-      'entity',
-      'channel',
-      'team',
-      'user',
-      'doc',
+      'events',
+      'commands',
+      'queries',
+      'services',
+      'domains',
+      'flows',
+      'entities',
+      'channels',
+      'teams',
+      'users',
+      'docs',
       'all',
     ];
 

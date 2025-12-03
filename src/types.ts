@@ -13,14 +13,30 @@ export type VersionedKind = 'event' | 'command' | 'query' | 'service' | 'domain'
 export type UnversionedKind = 'team' | 'user' | 'doc';
 
 /**
- * All resource kinds
+ * All resource kinds (singular)
  */
 export type ResourceKind = VersionedKind | UnversionedKind;
 
 /**
- * Filter type including 'all'
+ * Plural resource kinds (for API params)
  */
-export type ResourceFilter = ResourceKind | 'all';
+export type PluralResourceKind =
+  | 'events'
+  | 'commands'
+  | 'queries'
+  | 'services'
+  | 'domains'
+  | 'flows'
+  | 'entities'
+  | 'channels'
+  | 'teams'
+  | 'users'
+  | 'docs';
+
+/**
+ * Filter type including 'all' (accepts both singular and plural)
+ */
+export type ResourceFilter = ResourceKind | PluralResourceKind | 'all';
 
 // ============================================================================
 // List Results (from llms.txt - summary info)
