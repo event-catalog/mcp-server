@@ -1,15 +1,38 @@
 import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
-let cachedResponse: string | null = null;
+import { fetchParsedResources } from '../utils/fetch.js';
+import { filterByType } from '../utils/filter.js';
+import type { ResourceKind } from '../types.js';
 
-const getEventCatalogResources = async () => {
-  if (cachedResponse) return cachedResponse;
-  const baseUrl = process.env.EVENTCATALOG_URL || '';
-  const url = new URL('/docs/llm/llms.txt', baseUrl);
-  const response = await fetch(url.toString());
-  const text = await response.text();
-  cachedResponse = text;
-  return text;
-};
+/**
+ * Fetch and filter resources by type, return JSON
+ */
+export async function getResourcesByType(type: ResourceKind | 'all'): Promise<string> {
+  const resources = await fetchParsedResources();
+  const filtered = filterByType(resources, type);
+  return JSON.stringify(filtered, null, 2);
+}
+
+/**
+ * Map URI path to resource type
+ */
+function uriToType(uri: string): ResourceKind | 'all' {
+  const path = uri.replace('eventcatalog://', '');
+  const typeMap: Record<string, ResourceKind | 'all'> = {
+    all: 'all',
+    events: 'event',
+    domains: 'domain',
+    services: 'service',
+    queries: 'query',
+    commands: 'command',
+    flows: 'flow',
+    teams: 'team',
+    users: 'user',
+    entities: 'entity',
+    channels: 'channel',
+    docs: 'doc',
+  };
+  return typeMap[path] ?? 'all';
+}
 
 const resources = [
   {
@@ -71,9 +94,10 @@ const resources = [
 export function registerResources(server: McpServer) {
   resources.forEach((resource) => {
     server.resource(resource.name, new ResourceTemplate(resource.uri, { list: undefined }), async (uri) => {
-      const text = await getEventCatalogResources();
+      const type = uriToType(uri.href);
+      const json = await getResourcesByType(type);
       return {
-        contents: [{ uri: uri.href, text: text }],
+        contents: [{ uri: uri.href, text: json, mimeType: 'application/json' }],
       };
     });
   });

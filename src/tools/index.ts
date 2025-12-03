@@ -1,13 +1,13 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-let cachedResponse: string | null = null;
 import fetch from 'node-fetch';
 import { z } from 'zod';
 import { fileURLToPath, URL } from 'url';
 import { prompt as createFlowPrompt } from './flows.js';
 import path, { dirname } from 'path';
 import fs from 'fs';
-import { parseLlmsTxt } from '../parser.js';
 import { encodeCursor, decodeCursor, InvalidCursorError } from '../cursor.js';
+import { fetchParsedResources, fetchLlmsTxt } from '../utils/fetch.js';
+import { filterByType, filterBySearch } from '../utils/filter.js';
 import type { ParsedResource, ResourceFilter } from '../types.js';
 
 // Recreate __filename and __dirname
@@ -15,16 +15,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const howEventCatalogWorks = fs.readFileSync(path.join(__dirname, './files/how-eventcatalog-works.txt'), 'utf8');
-
-const getEventCatalogResources = async () => {
-  if (cachedResponse) return cachedResponse;
-  const baseUrl = process.env.EVENTCATALOG_URL || '';
-  const url = new URL('/docs/llm/llms.txt', baseUrl);
-  const response = await fetch(url.toString());
-  const text = await response.text();
-  cachedResponse = text;
-  return text;
-};
 
 const getResourceInformation = async (type: string, id: string, version: string) => {
   const baseUrl = process.env.EVENTCATALOG_URL || '';
@@ -60,23 +50,13 @@ export function filterAndPaginateResources(
   resources: ParsedResource[],
   params: { type?: ResourceFilter; search?: string; cursor?: string }
 ): { resources: ParsedResource[]; nextCursor?: string } {
-  let filtered = resources;
-
   // Filter by type
   const filterType = params.type ?? 'all';
-  if (filterType !== 'all') {
-    filtered = filtered.filter((r) => r.type === filterType);
-  }
+  let filtered = filterByType(resources, filterType);
 
-  // Filter by search term (case-insensitive)
+  // Filter by search term
   if (params.search) {
-    const searchLower = params.search.toLowerCase();
-    filtered = filtered.filter(
-      (r) =>
-        r.name.toLowerCase().includes(searchLower) ||
-        r.id.toLowerCase().includes(searchLower) ||
-        (r.summary && r.summary.toLowerCase().includes(searchLower))
-    );
+    filtered = filterBySearch(filtered, params.search);
   }
 
   // Pagination
@@ -294,8 +274,7 @@ export const TOOL_DEFINITIONS = [
 
 const handlers = {
   find_resources: async (params: { type?: ResourceFilter; search?: string; cursor?: string }) => {
-    const text = await getEventCatalogResources();
-    const resources = parseLlmsTxt(text);
+    const resources = await fetchParsedResources();
     // InvalidCursorError will propagate up with MCP error code -32602
     const result = filterAndPaginateResources(resources, params);
 
@@ -336,7 +315,7 @@ const handlers = {
     };
   },
   find_owners: async (params: any) => {
-    const text = await getEventCatalogResources();
+    const text = await fetchLlmsTxt();
     return {
       content: [{ type: 'text', text: text }],
     };
