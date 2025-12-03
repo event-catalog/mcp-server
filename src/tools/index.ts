@@ -6,7 +6,7 @@ import { prompt as createFlowPrompt } from './flows.js';
 import path, { dirname } from 'path';
 import fs from 'fs';
 import { encodeCursor, decodeCursor, InvalidCursorError } from '../cursor.js';
-import { fetchParsedResources, fetchLlmsTxt } from '../utils/fetch.js';
+import { fetchParsedResources, fetchOwnerById } from '../utils/fetch.js';
 import { filterByType, filterBySearch } from '../utils/filter.js';
 import type { ParsedResource, ResourceFilter } from '../types.js';
 
@@ -314,10 +314,28 @@ const handlers = {
       content: [{ type: 'text', text: text }],
     };
   },
-  find_owners: async (params: any) => {
-    const text = await fetchLlmsTxt();
+  find_owners: async (params: { id: string }) => {
+    const ownerId = params.id?.trim();
+
+    if (!ownerId) {
+      return {
+        content: [{ type: 'text', text: JSON.stringify({ error: 'Owner id is required' }) }],
+        isError: true,
+      };
+    }
+
+    const result = await fetchOwnerById(ownerId);
+
+    if ('error' in result) {
+      return {
+        content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        isError: true,
+      };
+    }
+
+    // Return markdown content directly
     return {
-      content: [{ type: 'text', text: text }],
+      content: [{ type: 'text', text: result.content }],
     };
   },
   eventstorm_to_eventcatalog: async (params: any) => {

@@ -5,11 +5,12 @@ import type { ResourceKind } from '../types.js';
 
 /**
  * Fetch and filter resources by type, return JSON
+ * Returns { resources: [...] } to match find_resources tool format
  */
 export async function getResourcesByType(type: ResourceKind | 'all'): Promise<string> {
-  const resources = await fetchParsedResources();
-  const filtered = filterByType(resources, type);
-  return JSON.stringify(filtered, null, 2);
+  const allResources = await fetchParsedResources();
+  const filtered = filterByType(allResources, type);
+  return JSON.stringify({ resources: filtered }, null, 2);
 }
 
 /**
