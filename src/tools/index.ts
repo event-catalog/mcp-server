@@ -69,7 +69,7 @@ export function filterAndPaginateResources(
     startIndex = decoded;
   }
 
-  const pageSize = DEFAULT_PAGE_SIZE;
+  const pageSize = process.env.PAGE_SIZE ? parseInt(process.env.PAGE_SIZE) : DEFAULT_PAGE_SIZE;
   const endIndex = startIndex + pageSize;
   const pageResources = filtered.slice(startIndex, endIndex);
   const hasMore = endIndex < filtered.length;
