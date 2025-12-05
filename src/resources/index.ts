@@ -70,11 +70,20 @@ const resources = [
 
 export function registerResources(server: McpServer) {
   resources.forEach((resource) => {
-    server.resource(resource.name, new ResourceTemplate(resource.uri, { list: undefined }), async (uri) => {
-      const text = await getEventCatalogResources();
-      return {
-        contents: [{ uri: uri.href, text: text }],
-      };
-    });
+    console.log('Registering resource', resource.name, resource.uri);
+    server.registerResource(
+      resource.name,
+      resource.uri,
+      {
+        description: resource.description,
+        mimeType: resource.mimeType,
+      },
+      async (uri) => {
+        const text = await getEventCatalogResources();
+        return {
+          contents: [{ uri: uri.href, text: text }],
+        };
+      }
+    );
   });
 }
