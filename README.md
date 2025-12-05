@@ -120,6 +120,20 @@ You can also create `.mcp.json` files in your project to configure the MCP serve
 You can read more about configuration for your project in the [Cursor documentation](https://docs.cursor.com/context/model-context-protocol#configuration-locations).
 
 
+## Running the MCP server with HTTP transport
+
+You can run the MCP server with [Streamable HTTP transport](https://modelcontextprotocol.io/specification/2025-03-26/basic/transports#streamable-http) by passing the `http` transport as the fourth argument or by setting the `MCP_TRANSPORT` environment variable to `http`.
+
+You can also set the port and base path for the MCP server by passing the `PORT` and `BASE_PATH` environment variables. If not set, the default port is 3000 and the default base path is `/`.
+
+```bash
+MCP_TRANSPORT=http PORT=3000 BASE_PATH=/eventcatalog npx -y @eventcatalog/mcp-server https://demo.eventcatalog.dev ABCD-1234-5678-9012-3456-7890
+```
+OR
+```bash
+npx -y @eventcatalog/mcp-server https://demo.eventcatalog.dev ABCD-1234-5678-9012-3456-7890 http 3000 /eventcatalog
+```
+
 # API
 
 Here is a list of all the APIs that the MCP server supports.
