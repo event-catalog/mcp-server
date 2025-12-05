@@ -57,7 +57,7 @@ switch (process.env.MCP_TRANSPORT) {
       console.log('Handling MCP request', req.url);
       try {
         const transport = new StreamableHTTPServerTransport({
-          sessionIdGenerator: undefined
+          sessionIdGenerator: undefined,
         });
 
         res.on('close', () => {
@@ -69,25 +69,27 @@ switch (process.env.MCP_TRANSPORT) {
       } catch (error) {
         console.error('Error handling MCP request:', error);
         if (!res.headersSent) {
-            res.status(500).json({
-                jsonrpc: '2.0',
-                error: {
-                    code: -32603,
-                    message: 'Internal server error'
-                },
-                id: null
-            });
+          res.status(500).json({
+            jsonrpc: '2.0',
+            error: {
+              code: -32603,
+              message: 'Internal server error',
+            },
+            id: null,
+          });
         }
-      } 
-    })
+      }
+    });
 
     const port = parseInt(process.env.PORT);
-    app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
-    }).on('error', (error) => {
-      console.error('Error starting server:', error);
-      process.exit(1);
-    });
+    app
+      .listen(port, () => {
+        console.log(`Server is running on port ${port}`);
+      })
+      .on('error', (error) => {
+        console.error('Error starting server:', error);
+        process.exit(1);
+      });
     break;
   default:
     throw new McpError(ErrorCode.InvalidParams, 'Invalid MCP transport');
