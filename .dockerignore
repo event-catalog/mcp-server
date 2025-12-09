@@ -1,0 +1,50 @@
+# Node modules
+node_modules
+npm-debug.log
+pnpm-debug.log*
+yarn-error.log
+lerna-debug.log
+
+# Build output
+dist
+
+# Tests
+tests
+*.spec.ts
+*.spec.js
+coverage
+.nyc_output
+
+# Development files
+*.md
+!README.md
+.git
+.gitignore
+.github
+.vscode
+.idea
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Scripts
+scripts
+
+# Documentation
+images
+
+# Config files
+.prettierrc
+.eslintrc*
+# tsconfig.json - needed for build
+vitest.config.ts
+
+# Other
+*.log
+
