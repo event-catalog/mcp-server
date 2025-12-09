@@ -1,5 +1,11 @@
 # @eventcatalog/mcp-server
 
+## 2.1.0
+
+### Minor Changes
+
+- e2b8457: feat(mcp): enabling eventcatalog to integrate with the MCP server
+
 ## 2.0.1
 
 ### Patch Changes
