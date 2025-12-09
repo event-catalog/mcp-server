@@ -14,7 +14,7 @@ export interface ServerConfig {
 export function parseConfig(): ServerConfig {
   const eventCatalogUrl = process.argv[2] || process.env.EVENTCATALOG_URL;
   const licenseKey = process.argv[3] || process.env.EVENTCATALOG_SCALE_LICENSE_KEY;
-  const transport = (process.env.MCP_TRANSPORT as 'stdio' | 'http') || 'stdio';
+  const transport = process.argv[4] || (process.env.MCP_TRANSPORT as 'stdio' | 'http') || 'stdio';
   const port = parseInt(process.argv[5] || process.env.PORT || '3000', 10);
   const basePath = process.argv[6] || process.env.BASE_PATH || '/';
 
