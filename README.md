@@ -162,47 +162,73 @@ Here is a list of all the APIs that the MCP server supports.
 ## Tools
 
 - `find_resources`
-  - Find resources that are available in EventCatalog
+  - Find resources that are available in EventCatalog including services, domains, events, commands, queries, flows, entities, channels, teams, users, and docs
+  - Supports filtering by type and search terms
+  - Includes pagination support with cursors
 - `find_resource`
-  - Get more information about a service, domain, event, command, query or flow in EventCatalog using its id and version
+  - Get more information about a service, domain, event, command, query, flow, entity, or channel in EventCatalog using its id and version
+  - Returns complete resource details including specifications, owners, producers, and consumers
+- `find_owners`
+  - Find owners (teams or users) for a domain, service, message, event, command, query, flow, or entity in EventCatalog
+  - Returns detailed owner information with documentation links
 - `find_producers_and_consumers`
-  - Get the producers (sends) and consumers (receives) for a service in EventCatalog
+  - Get the producers (sends) and consumers (receives) for services in EventCatalog
+  - Helps understand message flow and service dependencies
 - `get_schema`
-  - Returns the schema for a service (e.g OpenAPI, AsyncAPI, GraphQL), event, command or query in EventCatalog
-- `get_schemas`
-  - Returns list of schemas for services (e.g OpenAPI, AsyncAPI, GraphQL), events, commands or queries
+  - Returns the schema for a service (e.g., OpenAPI, AsyncAPI, GraphQL), event, command, or query in EventCatalog
+  - Supports all major schema formats
 - `review_schema_changes`
-  - Reviews schema changes for breaking changes and suggests fixes.
+  - Reviews schema changes for breaking changes and suggests fixes
+  - Compares old and new schemas to identify potential issues
+  - Provides recommendations for handling breaking changes
 - `explain_ubiquitous_language_terms`
   - Explain ubiquitous language terms for a given domain
-- `find_owners`
-  - Find owners (teams or users) for a domain, services, messages, events, commands, queries, flows or entities in EventCatalog
+  - Returns definitions and context for domain-specific terminology
 - `create_flow`
-  - Create a new flow in EventCatalog given a description of the business workflow.
-  - The tool will check all your resources in EventCatalog to find the best resources to match against the description.
-  - The flow will be created (markdown file) and can be visualized in EventCatalog.
+  - Create a new flow in EventCatalog given a description of the business workflow
+  - The tool will check all your resources in EventCatalog to find the best resources to match against the description
+  - The flow will be created (markdown file) and can be visualized in EventCatalog
+- `eventstorm_to_eventcatalog`
+  - Turn a photo of an EventStorm session into an EventCatalog
+  - Automatically generates domains, services, events, commands, flows, and ubiquitous language terms
+  - Creates proper folder structure and MDX files with frontmatter
+- `create_eventcatalog`
+  - Create a new EventCatalog project from scratch
+  - Generates all necessary configuration files (package.json, eventcatalog.config.ts)
+  - Sets up the complete folder structure and initial documentation
 
 
 ## Resources
 
+Resources provide quick access to collections of data from your EventCatalog. They can be used to get context about your architecture.
+
 - `eventcatalog://all`
-  - All messages, domains and services in EventCatalog
+  - All resources in EventCatalog (messages, domains, services, flows, teams, users, etc.)
+  - Use this for a complete overview of your architecture
 - `eventcatalog://events`
   - All events in EventCatalog
-- `eventcatalog://domains`
-  - All domains in EventCatalog
-- `eventcatalog://services`
-  - All services in EventCatalog
-- `eventcatalog://queries`
-  - All queries in EventCatalog
+  - Includes event names, versions, and descriptions
 - `eventcatalog://commands`
   - All commands in EventCatalog
+  - View all command messages in your system
+- `eventcatalog://queries`
+  - All queries in EventCatalog
+  - Access all query messages
+- `eventcatalog://services`
+  - All services in EventCatalog
+  - Complete list of services with their metadata
+- `eventcatalog://domains`
+  - All domains in EventCatalog
+  - View domain boundaries and subdomains
 - `eventcatalog://flows`
-  - All flows in EventCatalog
+  - All flows (business processes) in EventCatalog
+  - Access workflow definitions and state machines
 - `eventcatalog://teams`
   - All teams in EventCatalog
+  - View team information and ownership
 - `eventcatalog://users`
   - All users in EventCatalog
+  - Access user profiles and ownership information
 
 
 
