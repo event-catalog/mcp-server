@@ -1,80 +1,89 @@
-import { McpServer, ResourceTemplate } from '@modelcontextprotocol/sdk/server/mcp.js';
-let cachedResponse: string | null = null;
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { fetchParsedResources } from '../utils/fetch.js';
+import { filterByType } from '../utils/filter.js';
+import type { ResourceKind } from '../types.js';
 
-const getEventCatalogResources = async () => {
-  if (cachedResponse) return cachedResponse;
-  const baseUrl = process.env.EVENTCATALOG_URL || '';
-  const url = new URL('/docs/llm/llms.txt', baseUrl);
-  const response = await fetch(url.toString());
-  const text = await response.text();
-  cachedResponse = text;
-  return text;
-};
+/**
+ * Fetch and filter resources by type, return JSON
+ */
+export async function getResourcesByType(type: ResourceKind | 'all'): Promise<string> {
+  const allResources = await fetchParsedResources();
+  const filtered = filterByType(allResources, type);
+  return JSON.stringify({ resources: filtered }, null, 2);
+}
 
-const resources = [
+/**
+ * Static list resources configuration
+ */
+const listResources = [
   {
     name: 'All Resources in EventCatalog',
     uri: 'eventcatalog://all',
     description: 'All messages, domains and services in EventCatalog',
-    mimeType: 'application/json',
+    type: 'all' as const,
   },
   {
     name: 'All Events in EventCatalog',
     uri: 'eventcatalog://events',
     description: 'All events in EventCatalog',
-    mimeType: 'application/json',
+    type: 'event' as const,
   },
   {
     name: 'All Domains in EventCatalog',
     uri: 'eventcatalog://domains',
     description: 'All domains in EventCatalog',
-    mimeType: 'application/json',
+    type: 'domain' as const,
   },
   {
     name: 'All Services in EventCatalog',
     uri: 'eventcatalog://services',
     description: 'All services in EventCatalog',
-    mimeType: 'application/json',
+    type: 'service' as const,
   },
   {
     name: 'All Queries in EventCatalog',
     uri: 'eventcatalog://queries',
     description: 'All queries in EventCatalog',
-    mimeType: 'application/json',
+    type: 'query' as const,
   },
   {
     name: 'All Commands in EventCatalog',
     uri: 'eventcatalog://commands',
     description: 'All commands in EventCatalog',
-    mimeType: 'application/json',
+    type: 'command' as const,
   },
   {
     name: 'All Flows in EventCatalog',
     uri: 'eventcatalog://flows',
     description: 'All flows in EventCatalog',
-    mimeType: 'application/json',
+    type: 'flow' as const,
   },
   {
     name: 'All Teams in EventCatalog',
     uri: 'eventcatalog://teams',
     description: 'All teams in EventCatalog',
-    mimeType: 'application/json',
+    type: 'team' as const,
   },
   {
     name: 'All Users in EventCatalog',
     uri: 'eventcatalog://users',
     description: 'All users in EventCatalog',
-    mimeType: 'application/json',
+    type: 'user' as const,
   },
 ];
 
 export function registerResources(server: McpServer) {
-  resources.forEach((resource) => {
-    server.resource(resource.name, new ResourceTemplate(resource.uri, { list: undefined }), async (uri) => {
-      const text = await getEventCatalogResources();
-      return {
-        contents: [{ uri: uri.href, text: text }],
-      };
-    });
-  });
+  for (const resource of listResources) {
+    server.registerResource(
+      resource.name,
+      resource.uri,
+      { description: resource.description, mimeType: 'application/json' },
+      async (uri) => {
+        const json = await getResourcesByType(resource.type);
+        return {
+          contents: [{ uri: uri.href, text: json, mimeType: 'application/json' }],
+        };
+      }
+    );
+  }
 }

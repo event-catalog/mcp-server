@@ -1,27 +1,20 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-let cachedResponse: string | null = null;
 import fetch from 'node-fetch';
 import { z } from 'zod';
 import { fileURLToPath, URL } from 'url';
 import { prompt as createFlowPrompt } from './flows.js';
 import path, { dirname } from 'path';
 import fs from 'fs';
+import { encodeCursor, decodeCursor, InvalidCursorError } from '../cursor.js';
+import { fetchParsedResources, fetchOwnerById } from '../utils/fetch.js';
+import { filterByType, filterBySearch, pluralToSingular } from '../utils/filter.js';
+import type { ParsedResource, ResourceFilter } from '../types.js';
 
 // Recreate __filename and __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const howEventCatalogWorks = fs.readFileSync(path.join(__dirname, './files/how-eventcatalog-works.txt'), 'utf8');
-
-const getEventCatalogResources = async () => {
-  if (cachedResponse) return cachedResponse;
-  const baseUrl = process.env.EVENTCATALOG_URL || '';
-  const url = new URL('/docs/llm/llms.txt', baseUrl);
-  const response = await fetch(url.toString());
-  const text = await response.text();
-  cachedResponse = text;
-  return text;
-};
 
 const getResourceInformation = async (type: string, id: string, version: string) => {
   const baseUrl = process.env.EVENTCATALOG_URL || '';
@@ -47,6 +40,51 @@ const getProducersAndConsumers = async () => {
   return text;
 };
 
+const DEFAULT_PAGE_SIZE = 50;
+
+/**
+ * Filter and paginate resources - exported for testing
+ * Throws InvalidCursorError if cursor is invalid (MCP error code -32602)
+ */
+export function filterAndPaginateResources(
+  resources: ParsedResource[],
+  params: { type?: ResourceFilter; search?: string; cursor?: string }
+): { resources: ParsedResource[]; nextCursor?: string } {
+  // Filter by type
+  const filterType = params.type ?? 'all';
+  let filtered = filterByType(resources, filterType);
+
+  // Filter by search term
+  if (params.search) {
+    filtered = filterBySearch(filtered, params.search);
+  }
+
+  // Pagination
+  let startIndex = 0;
+  if (params.cursor) {
+    const decoded = decodeCursor(params.cursor);
+    if (decoded === null) {
+      throw new InvalidCursorError();
+    }
+    startIndex = decoded;
+  }
+
+  const pageSize = process.env.PAGE_SIZE ? parseInt(process.env.PAGE_SIZE) : DEFAULT_PAGE_SIZE;
+  const endIndex = startIndex + pageSize;
+  const pageResources = filtered.slice(startIndex, endIndex);
+  const hasMore = endIndex < filtered.length;
+
+  const result: { resources: ParsedResource[]; nextCursor?: string } = {
+    resources: pageResources,
+  };
+
+  if (hasMore) {
+    result.nextCursor = encodeCursor(endIndex);
+  }
+
+  return result;
+}
+
 export const TOOL_DEFINITIONS = [
   {
     name: 'find_resources' as const,
@@ -66,6 +104,28 @@ export const TOOL_DEFINITIONS = [
       '- When you return a message, in brackets let me know if its a query, command or event',
       `- The host URL is ${process.env.EVENTCATALOG_URL}`,
     ].join('\n'),
+    paramsSchema: {
+      type: z
+        .enum([
+          'events',
+          'commands',
+          'queries',
+          'services',
+          'domains',
+          'flows',
+          'entities',
+          'channels',
+          'teams',
+          'users',
+          'docs',
+          'all',
+        ])
+        .optional()
+        .default('all')
+        .describe('Filter resources by type. Defaults to "all".'),
+      search: z.string().trim().optional().describe('Search term to filter resources by name, id, or summary (case-insensitive)'),
+      cursor: z.string().trim().optional().describe('Pagination cursor from previous response'),
+    },
   },
   {
     name: 'find_resource' as const,
@@ -87,9 +147,13 @@ export const TOOL_DEFINITIONS = [
     ].join('\n'),
     paramsSchema: {
       id: z.string().trim().describe('The id of the resource to find'),
-      version: z.string().trim().describe('The version of the resource to find'),
+      version: z
+        .string()
+        .trim()
+        .optional()
+        .describe('The version of the resource to find. If not provided, uses the latest version from the catalog.'),
       type: z
-        .enum(['services', 'domains', 'events', 'commands', 'queries', 'flows', 'entities'])
+        .enum(['services', 'domains', 'events', 'commands', 'queries', 'flows', 'entities', 'channels'])
         .describe('The type of resource to find'),
     },
   },
@@ -171,7 +235,9 @@ export const TOOL_DEFINITIONS = [
     paramsSchema: {
       id: z.string().trim().describe('The id of the resource to find'),
       version: z.string().trim().describe('The version of the resource to find'),
-      type: z.enum(['services', 'events', 'commands', 'queries']).describe('The type of resource to find'),
+      type: z
+        .enum(['services', 'domains', 'events', 'commands', 'queries', 'flows', 'entities', 'channels'])
+        .describe('The type of resource to find'),
     },
   },
   {
@@ -189,7 +255,9 @@ export const TOOL_DEFINITIONS = [
     paramsSchema: {
       id: z.string().trim().describe('The id of the resource to find'),
       version: z.string().trim().describe('The version of the resource to find'),
-      type: z.enum(['services', 'events', 'commands', 'queries']).describe('The type of resource to find'),
+      type: z
+        .enum(['services', 'domains', 'events', 'commands', 'queries', 'flows', 'entities', 'channels'])
+        .describe('The type of resource to find'),
       oldSchema: z.string().trim().describe('The old schema to compare to the new schema'),
       newSchema: z.string().trim().describe('The new schema to compare to the old schema'),
     },
@@ -218,64 +286,101 @@ export const TOOL_DEFINITIONS = [
 ];
 
 const handlers = {
-  find_resources: async (params: any) => {
-    const text = await getEventCatalogResources();
+  find_resources: async (params: { type?: ResourceFilter; search?: string; cursor?: string }) => {
+    const resources = await fetchParsedResources();
+    // InvalidCursorError will propagate up with MCP error code -32602
+    const result = filterAndPaginateResources(resources, params);
+
     return {
-      content: [{ type: 'text', text: text }],
+      content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }],
     };
   },
   find_resource: async (params: any) => {
     const id = params.id;
-    const version = params.version || 'latest';
+    let version = params.version;
     const type = params.type;
+
+    // If no version provided, look up the latest from llms.txt
+    if (!version || version === 'latest') {
+      const resources = await fetchParsedResources();
+      const singularType = (pluralToSingular as Record<string, string>)[type] || type;
+      const resource = resources.find((r) => r.id === id && r.type === singularType);
+      if (resource && 'version' in resource) {
+        version = resource.version;
+      } else {
+        return {
+          content: [{ type: 'text' as const, text: JSON.stringify({ error: 'Resource not found', id, type }) }],
+          isError: true,
+        };
+      }
+    }
+
     const text = await getResourceInformation(type, id, version);
     return {
-      content: [{ type: 'text', text: text }],
+      content: [{ type: 'text' as const, text: text }],
     };
   },
   find_producers_and_consumers: async (params: any) => {
     const text = await getProducersAndConsumers();
     return {
-      content: [{ type: 'text', text: text }],
+      content: [{ type: 'text' as const, text: text }],
     };
   },
   get_schema: async (params: any) => {
     const text = await getResourceInformation(params.type, params.id, params.version);
     return {
-      content: [{ type: 'text', text: text }],
+      content: [{ type: 'text' as const, text: text }],
     };
   },
   review_schema_changes: async (params: any) => {
     return {
-      content: [{ type: 'text', text: '' }],
+      content: [{ type: 'text' as const, text: '' }],
     };
   },
   explain_ubiquitous_language_terms: async (params: any) => {
     const text = await getUbiquitousLanguageTerms(params.domain);
     return {
-      content: [{ type: 'text', text: text }],
+      content: [{ type: 'text' as const, text: text }],
     };
   },
-  find_owners: async (params: any) => {
-    const text = await getEventCatalogResources();
+  find_owners: async (params: { id: string }) => {
+    const ownerId = params.id?.trim();
+
+    if (!ownerId) {
+      return {
+        content: [{ type: 'text' as const, text: JSON.stringify({ error: 'Owner id is required' }) }],
+        isError: true,
+      };
+    }
+
+    const result = await fetchOwnerById(ownerId);
+
+    if ('error' in result) {
+      return {
+        content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }],
+        isError: true,
+      };
+    }
+
+    // Return markdown content directly
     return {
-      content: [{ type: 'text', text: text }],
+      content: [{ type: 'text' as const, text: result.content }],
     };
   },
   eventstorm_to_eventcatalog: async (params: any) => {
     return {
-      content: [{ type: 'text', text: howEventCatalogWorks }],
+      content: [{ type: 'text' as const, text: howEventCatalogWorks }],
     };
   },
   // noop function?
   create_flow: async (params: any) => {
     return {
-      content: [{ type: 'text', text: 'Flow created' }],
+      content: [{ type: 'text' as const, text: 'Flow created' }],
     };
   },
   create_eventcatalog: async (params: any) => {
     return {
-      content: [{ type: 'text', text: howEventCatalogWorks }],
+      content: [{ type: 'text' as const, text: howEventCatalogWorks }],
     };
   },
 };
@@ -287,10 +392,17 @@ export function registerTools(server: McpServer) {
       throw new Error(`Handler for tool ${tool.name} not found`);
     }
     // @ts-ignore
-    const paramsSchema = tool.paramsSchema ?? {};
+    const inputSchema = tool.paramsSchema ? z.object(tool.paramsSchema) : undefined;
     // @ts-ignore
-    server.tool(tool.name, tool.description, paramsSchema, async (params: any) => {
-      return handler(params);
-    });
+    server.registerTool(
+      tool.name,
+      {
+        description: tool.description,
+        inputSchema: inputSchema,
+      },
+      async (params: any) => {
+        return handler(params);
+      }
+    );
   }
 }
