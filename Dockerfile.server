@@ -1,0 +1,87 @@
+# Multi-stage build for optimized production MCP server
+# Pin to specific Node.js version for security and reproducibility
+FROM node:22.12.0-alpine3.21 AS builder
+
+# Install security updates and pnpm
+RUN apk update && \
+    apk upgrade --no-cache && \
+    npm install -g pnpm@9.15.0 --no-audit --no-fund && \
+    npm cache clean --force
+
+WORKDIR /app
+
+# Copy dependency definitions
+COPY package.json pnpm-lock.yaml ./
+
+# Install dependencies (skip scripts to avoid running prepare before source is copied)
+RUN pnpm install --frozen-lockfile --ignore-scripts && \
+    pnpm store prune
+
+# Copy source code
+COPY . .
+
+# Build the project
+RUN pnpm run build
+
+# Production stage
+FROM node:22.12.0-alpine3.21 AS production
+
+# Metadata labels
+LABEL maintainer="David Boyne" \
+      description="EventCatalog MCP Server" \
+      org.opencontainers.image.source="https://github.com/event-catalog/mcp-server" \
+      org.opencontainers.image.description="MCP server for EventCatalog" \
+      org.opencontainers.image.licenses="MIT"
+
+# Install security updates, pnpm, and required tools for healthcheck
+RUN apk update && \
+    apk upgrade --no-cache && \
+    apk add --no-cache wget && \
+    npm install -g pnpm@9.15.0 --no-audit --no-fund && \
+    npm cache clean --force && \
+    rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
+
+# Create a non-root user for security
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001 -G nodejs
+
+WORKDIR /app
+
+# Set ownership of the working directory
+RUN chown -R nodejs:nodejs /app
+
+# Copy dependency definitions
+COPY --chown=nodejs:nodejs package.json pnpm-lock.yaml ./
+
+# Install only production dependencies (skip scripts since we're copying built artifacts)
+RUN pnpm install --prod --frozen-lockfile --ignore-scripts && \
+    pnpm store prune && \
+    chown -R nodejs:nodejs /app
+
+# Copy built artifacts from builder with proper ownership
+COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+
+# Switch to non-root user
+USER nodejs
+
+# Environment variables with defaults
+ENV MCP_TRANSPORT=http \
+    PORT=3000 \
+    BASE_PATH=/ \
+    NODE_ENV=production \
+    NODE_OPTIONS="--max-old-space-size=512"
+
+# Expose the port (used when running in HTTP mode)
+EXPOSE 3000
+
+# Health check for HTTP mode
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD if [ "$MCP_TRANSPORT" = "http" ]; then \
+        wget --no-verbose --tries=1 --spider http://localhost:${PORT}${BASE_PATH}health || exit 1; \
+    else \
+        exit 0; \
+    fi
+
+# Run the MCP server
+CMD ["node", "dist/index.js"]
+

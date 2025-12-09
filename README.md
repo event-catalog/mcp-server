@@ -65,6 +65,41 @@ To install EventCatalog for Claude Desktop automatically via [Smithery](https://
 npx -y @smithery/cli install @event-catalog/mcp-server --client claude
 ```
 
+### Running as a Docker Container
+
+If you want to run the MCP server as a standalone Docker container (for example, to run it as an HTTP server), see the [Docker Deployment Guide](./README.Docker.md).
+
+This is useful for:
+- Running the MCP server in production environments
+- Deploying as a containerized service
+- Running in HTTP mode for integration with multiple clients
+- Kubernetes, Docker Swarm, or other container orchestration platforms
+
+## Transport Modes
+
+The EventCatalog MCP Server supports two transport modes:
+
+### STDIO Mode (Default)
+- Uses standard input/output for communication
+- Ideal for local development and MCP clients like Claude Desktop and Cursor
+- Started automatically when you add the server to your MCP client
+- No port exposure needed
+- **Recommended for**: Claude Desktop, Cursor, Windsurf, and other desktop MCP clients
+
+### HTTP Mode
+- Runs as an HTTP server on a specified port (default: 3000)
+- Ideal for production deployments and container environments
+- Allows multiple clients to connect to a single server instance
+- Includes health check endpoints for monitoring
+- **Recommended for**: Docker deployments, Kubernetes, production environments, and multi-client setups
+
+To use HTTP mode, pass `http` as the transport parameter:
+```bash
+npx -y @eventcatalog/mcp-server {URL} {LICENSE_KEY} http {PORT}
+```
+
+Or set the `MCP_TRANSPORT` environment variable to `http` (see [Docker Deployment Guide](./README.Docker.md) for details).
+
 ## Setup MCP Clients
 
 Each MCP client has a different way of adding the MCP server.
