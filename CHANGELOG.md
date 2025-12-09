@@ -1,5 +1,11 @@
 # @eventcatalog/mcp-server
 
+## 2.0.1
+
+### Patch Changes
+
+- b506669: fix(mcp): reads the transport from the CLI args
+
 ## 2.0.0
 
 ### Major Changes
