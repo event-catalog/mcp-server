@@ -5,8 +5,9 @@ import type { ServerConfig } from '../config.js';
 
 /**
  * Handle MCP requests over HTTP
+ * This function can be used in any HTTP framework (Express, Astro, etc.)
  */
-async function handleHttpRequest(server: McpServer, req: Request, res: Response): Promise<void> {
+export async function handleMcpRequest(server: McpServer, req: Request, res: Response): Promise<void> {
   try {
     const transport = new StreamableHTTPServerTransport({
       sessionIdGenerator: undefined,
@@ -40,7 +41,7 @@ export function startHttpServer(server: McpServer, config: ServerConfig): void {
   const app: Express = express();
 
   app.use(config.basePath, async (req, res) => {
-    await handleHttpRequest(server, req, res);
+    await handleMcpRequest(server, req, res);
   });
 
   app

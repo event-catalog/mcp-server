@@ -11,7 +11,7 @@ import pkg from '../package.json' with { type: 'json' };
 /**
  * Initialize the MCP server with tools and resources
  */
-function createMcpServer(): McpServer {
+export function createMcpServer(): McpServer {
   const server = new McpServer({
     name: 'EventCatalog MCP Server',
     version: pkg.version,
@@ -22,6 +22,12 @@ function createMcpServer(): McpServer {
 
   return server;
 }
+
+// Export other utilities for programmatic use
+export { parseConfig, createConfig, type ServerConfig } from './config.js';
+export { startHttpServer, startStdioServer } from './servers/index.js';
+export { handleMcpRequest } from './servers/http.js';
+export { checkLicense };
 
 /**
  * Main entry point

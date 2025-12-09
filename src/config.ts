@@ -9,6 +9,40 @@ export interface ServerConfig {
 }
 
 /**
+ * Create a server configuration programmatically
+ * Useful for framework integrations like Astro, Next.js, etc.
+ */
+export function createConfig(options: {
+  eventCatalogUrl: string;
+  licenseKey: string;
+  transport?: 'stdio' | 'http';
+  port?: number;
+  basePath?: string;
+}): ServerConfig {
+  const config: ServerConfig = {
+    eventCatalogUrl: options.eventCatalogUrl,
+    licenseKey: options.licenseKey,
+    transport: options.transport || 'http',
+    port: options.port || 3000,
+    basePath: options.basePath || '/',
+  };
+
+  // Validate URL format
+  try {
+    new URL(config.eventCatalogUrl);
+  } catch (error) {
+    throw new McpError(ErrorCode.InvalidParams, 'eventCatalogUrl is not a valid URL');
+  }
+
+  // Validate port
+  if (isNaN(config.port)) {
+    throw new McpError(ErrorCode.InvalidParams, 'port is not a valid integer');
+  }
+
+  return config;
+}
+
+/**
  * Parse and validate configuration from command line arguments and environment variables
  */
 export function parseConfig(): ServerConfig {

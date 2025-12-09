@@ -6,6 +6,16 @@
   "author": "David Boyne",
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./dist/license/check-license.js": {
+      "import": "./dist/license/check-license.js"
+    }
+  },
   "bin": {
     "eventcatalog-mcp-server": "dist/index.js"
   },
