@@ -1,5 +1,11 @@
 # @eventcatalog/mcp-server
 
+## 2.0.0
+
+### Major Changes
+
+- 1d7998e: feat(mcp): added http streaming and improved existing tools with pagination support
+
 ## 1.2.0
 
 ### Minor Changes
