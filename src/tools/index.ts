@@ -106,20 +106,25 @@ export const TOOL_DEFINITIONS = [
     ].join('\n'),
     paramsSchema: {
       type: z
-        .enum(['events', 'commands', 'queries', 'services', 'domains', 'flows', 'entities', 'channels', 'teams', 'users', 'docs', 'all'])
+        .enum([
+          'events',
+          'commands',
+          'queries',
+          'services',
+          'domains',
+          'flows',
+          'entities',
+          'channels',
+          'teams',
+          'users',
+          'docs',
+          'all',
+        ])
         .optional()
         .default('all')
         .describe('Filter resources by type. Defaults to "all".'),
-      search: z
-        .string()
-        .trim()
-        .optional()
-        .describe('Search term to filter resources by name, id, or summary (case-insensitive)'),
-      cursor: z
-        .string()
-        .trim()
-        .optional()
-        .describe('Pagination cursor from previous response'),
+      search: z.string().trim().optional().describe('Search term to filter resources by name, id, or summary (case-insensitive)'),
+      cursor: z.string().trim().optional().describe('Pagination cursor from previous response'),
     },
   },
   {
@@ -142,7 +147,11 @@ export const TOOL_DEFINITIONS = [
     ].join('\n'),
     paramsSchema: {
       id: z.string().trim().describe('The id of the resource to find'),
-      version: z.string().trim().optional().describe('The version of the resource to find. If not provided, uses the latest version from the catalog.'),
+      version: z
+        .string()
+        .trim()
+        .optional()
+        .describe('The version of the resource to find. If not provided, uses the latest version from the catalog.'),
       type: z
         .enum(['services', 'domains', 'events', 'commands', 'queries', 'flows', 'entities', 'channels'])
         .describe('The type of resource to find'),
@@ -283,7 +292,7 @@ const handlers = {
     const result = filterAndPaginateResources(resources, params);
 
     return {
-      content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+      content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }],
     };
   },
   find_resource: async (params: any) => {
@@ -300,7 +309,7 @@ const handlers = {
         version = resource.version;
       } else {
         return {
-          content: [{ type: 'text', text: JSON.stringify({ error: 'Resource not found', id, type }) }],
+          content: [{ type: 'text' as const, text: JSON.stringify({ error: 'Resource not found', id, type }) }],
           isError: true,
         };
       }
@@ -308,30 +317,30 @@ const handlers = {
 
     const text = await getResourceInformation(type, id, version);
     return {
-      content: [{ type: 'text', text: text }],
+      content: [{ type: 'text' as const, text: text }],
     };
   },
   find_producers_and_consumers: async (params: any) => {
     const text = await getProducersAndConsumers();
     return {
-      content: [{ type: 'text', text: text }],
+      content: [{ type: 'text' as const, text: text }],
     };
   },
   get_schema: async (params: any) => {
     const text = await getResourceInformation(params.type, params.id, params.version);
     return {
-      content: [{ type: 'text', text: text }],
+      content: [{ type: 'text' as const, text: text }],
     };
   },
   review_schema_changes: async (params: any) => {
     return {
-      content: [{ type: 'text', text: '' }],
+      content: [{ type: 'text' as const, text: '' }],
     };
   },
   explain_ubiquitous_language_terms: async (params: any) => {
     const text = await getUbiquitousLanguageTerms(params.domain);
     return {
-      content: [{ type: 'text', text: text }],
+      content: [{ type: 'text' as const, text: text }],
     };
   },
   find_owners: async (params: { id: string }) => {
@@ -339,7 +348,7 @@ const handlers = {
 
     if (!ownerId) {
       return {
-        content: [{ type: 'text', text: JSON.stringify({ error: 'Owner id is required' }) }],
+        content: [{ type: 'text' as const, text: JSON.stringify({ error: 'Owner id is required' }) }],
         isError: true,
       };
     }
@@ -348,30 +357,30 @@ const handlers = {
 
     if ('error' in result) {
       return {
-        content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
+        content: [{ type: 'text' as const, text: JSON.stringify(result, null, 2) }],
         isError: true,
       };
     }
 
     // Return markdown content directly
     return {
-      content: [{ type: 'text', text: result.content }],
+      content: [{ type: 'text' as const, text: result.content }],
     };
   },
   eventstorm_to_eventcatalog: async (params: any) => {
     return {
-      content: [{ type: 'text', text: howEventCatalogWorks }],
+      content: [{ type: 'text' as const, text: howEventCatalogWorks }],
     };
   },
   // noop function?
   create_flow: async (params: any) => {
     return {
-      content: [{ type: 'text', text: 'Flow created' }],
+      content: [{ type: 'text' as const, text: 'Flow created' }],
     };
   },
   create_eventcatalog: async (params: any) => {
     return {
-      content: [{ type: 'text', text: howEventCatalogWorks }],
+      content: [{ type: 'text' as const, text: howEventCatalogWorks }],
     };
   },
 };
@@ -383,10 +392,17 @@ export function registerTools(server: McpServer) {
       throw new Error(`Handler for tool ${tool.name} not found`);
     }
     // @ts-ignore
-    const paramsSchema = tool.paramsSchema ?? {};
+    const inputSchema = tool.paramsSchema ? z.object(tool.paramsSchema) : undefined;
     // @ts-ignore
-    server.tool(tool.name, tool.description, paramsSchema, async (params: any) => {
-      return handler(params);
-    });
+    server.registerTool(
+      tool.name,
+      {
+        description: tool.description,
+        inputSchema: inputSchema,
+      },
+      async (params: any) => {
+        return handler(params);
+      }
+    );
   }
 }

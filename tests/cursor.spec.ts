@@ -1,11 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import {
-  encodeCursor,
-  decodeCursor,
-  decodeCursorOrThrow,
-  InvalidCursorError,
-  INVALID_CURSOR_ERROR_CODE,
-} from '../src/cursor.js';
+import { encodeCursor, decodeCursor, decodeCursorOrThrow, InvalidCursorError, INVALID_CURSOR_ERROR_CODE } from '../src/cursor.js';
 
 describe('cursor', () => {
   describe('encodeCursor', () => {

@@ -13,9 +13,15 @@ import type {
   DocResource,
 } from './types.js';
 
-type VersionedType = EventResource['type'] | CommandResource['type'] | QueryResource['type'] |
-  ServiceResource['type'] | DomainResource['type'] | FlowResource['type'] |
-  EntityResource['type'] | ChannelResource['type'];
+type VersionedType =
+  | EventResource['type']
+  | CommandResource['type']
+  | QueryResource['type']
+  | ServiceResource['type']
+  | DomainResource['type']
+  | FlowResource['type']
+  | EntityResource['type']
+  | ChannelResource['type'];
 
 type UnversionedType = TeamResource['type'] | UserResource['type'] | DocResource['type'];
 
@@ -23,19 +29,19 @@ type UnversionedType = TeamResource['type'] | UserResource['type'] | DocResource
  * Section header to resource type mapping
  */
 const VERSIONED_SECTIONS: Record<string, VersionedType> = {
-  'events': 'event',
-  'commands': 'command',
-  'queries': 'query',
-  'services': 'service',
-  'domains': 'domain',
-  'flows': 'flow',
-  'entities': 'entity',
-  'channels': 'channel',
+  events: 'event',
+  commands: 'command',
+  queries: 'query',
+  services: 'service',
+  domains: 'domain',
+  flows: 'flow',
+  entities: 'entity',
+  channels: 'channel',
 };
 
 const UNVERSIONED_SECTIONS: Record<string, UnversionedType> = {
-  'teams': 'team',
-  'users': 'user',
+  teams: 'team',
+  users: 'user',
   'custom docs': 'doc',
 };
 

@@ -43,10 +43,7 @@ export function clearCache(): void {
  * Fetch owner (user or team) by id
  * Tries user first, then team
  */
-export async function fetchOwnerById(
-  ownerId: string,
-  fetchFn: typeof fetch = fetch
-): Promise<OwnerResult | OwnerNotFoundError> {
+export async function fetchOwnerById(ownerId: string, fetchFn: typeof fetch = fetch): Promise<OwnerResult | OwnerNotFoundError> {
   const baseUrl = getBaseUrl();
 
   // Try user first

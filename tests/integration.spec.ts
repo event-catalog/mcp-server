@@ -200,9 +200,7 @@ describe('Integration tests with demo.eventcatalog.dev', () => {
         const firstEvent = events[0];
 
         // Simulate looking up version by id
-        const found = parsedResources.find(
-          (r) => r.id === firstEvent.id && r.type === 'event'
-        );
+        const found = parsedResources.find((r) => r.id === firstEvent.id && r.type === 'event');
 
         expect(found).toBeDefined();
         expect(found).toHaveProperty('version');
@@ -215,9 +213,7 @@ describe('Integration tests with demo.eventcatalog.dev', () => {
         const service = services[0];
 
         // Simulate the find_resource lookup
-        const found = parsedResources.find(
-          (r) => r.id === service.id && r.type === 'service'
-        );
+        const found = parsedResources.find((r) => r.id === service.id && r.type === 'service');
 
         expect(found).toBeDefined();
         expect(found?.id).toBe(service.id);

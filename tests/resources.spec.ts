@@ -31,10 +31,38 @@ const mockLlmsTxtForGetResources = `# Test EventCatalog
 
 // Sample resources for testing
 const sampleResources: ParsedResource[] = [
-  { type: 'event', id: 'OrderCreated', name: 'Order Created', version: '1.0.0', url: '/events/OrderCreated/1.0.0', summary: 'When an order is created' },
-  { type: 'event', id: 'PaymentReceived', name: 'Payment Received', version: '2.0.0', url: '/events/PaymentReceived/2.0.0', summary: 'Payment completed' },
-  { type: 'command', id: 'CreateOrder', name: 'Create Order', version: '1.0.0', url: '/commands/CreateOrder/1.0.0', summary: 'Create a new order' },
-  { type: 'service', id: 'OrderService', name: 'Order Service', version: '1.0.0', url: '/services/OrderService/1.0.0', summary: 'Handles orders' },
+  {
+    type: 'event',
+    id: 'OrderCreated',
+    name: 'Order Created',
+    version: '1.0.0',
+    url: '/events/OrderCreated/1.0.0',
+    summary: 'When an order is created',
+  },
+  {
+    type: 'event',
+    id: 'PaymentReceived',
+    name: 'Payment Received',
+    version: '2.0.0',
+    url: '/events/PaymentReceived/2.0.0',
+    summary: 'Payment completed',
+  },
+  {
+    type: 'command',
+    id: 'CreateOrder',
+    name: 'Create Order',
+    version: '1.0.0',
+    url: '/commands/CreateOrder/1.0.0',
+    summary: 'Create a new order',
+  },
+  {
+    type: 'service',
+    id: 'OrderService',
+    name: 'Order Service',
+    version: '1.0.0',
+    url: '/services/OrderService/1.0.0',
+    summary: 'Handles orders',
+  },
   { type: 'team', id: 'platform-team', name: 'Platform Team', url: '/teams/platform-team', summary: 'Core platform' },
   { type: 'user', id: 'john-doe', name: 'John Doe', url: '/users/john-doe', summary: 'Developer' },
 ];

@@ -264,7 +264,7 @@ describe('parseLlmsTxt', () => {
       const result = parseLlmsTxt(input);
 
       expect(result).toHaveLength(3);
-      expect(result.map(r => r.id)).toEqual(['OrderPlaced', 'OrderShipped', 'OrderDelivered']);
+      expect(result.map((r) => r.id)).toEqual(['OrderPlaced', 'OrderShipped', 'OrderDelivered']);
     });
   });
 
@@ -386,17 +386,17 @@ Some text here
       const result = parseLlmsTxt(input);
 
       // Count by type
-      const events = result.filter(r => r.type === 'event');
-      const commands = result.filter(r => r.type === 'command');
-      const queries = result.filter(r => r.type === 'query');
-      const services = result.filter(r => r.type === 'service');
-      const domains = result.filter(r => r.type === 'domain');
-      const flows = result.filter(r => r.type === 'flow');
-      const entities = result.filter(r => r.type === 'entity');
-      const channels = result.filter(r => r.type === 'channel');
-      const teams = result.filter(r => r.type === 'team');
-      const users = result.filter(r => r.type === 'user');
-      const docs = result.filter(r => r.type === 'doc');
+      const events = result.filter((r) => r.type === 'event');
+      const commands = result.filter((r) => r.type === 'command');
+      const queries = result.filter((r) => r.type === 'query');
+      const services = result.filter((r) => r.type === 'service');
+      const domains = result.filter((r) => r.type === 'domain');
+      const flows = result.filter((r) => r.type === 'flow');
+      const entities = result.filter((r) => r.type === 'entity');
+      const channels = result.filter((r) => r.type === 'channel');
+      const teams = result.filter((r) => r.type === 'team');
+      const users = result.filter((r) => r.type === 'user');
+      const docs = result.filter((r) => r.type === 'doc');
 
       // Verify counts
       expect(events).toHaveLength(6);

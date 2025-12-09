@@ -5,13 +5,62 @@ import type { ParsedResource } from '../src/types.js';
 
 // Sample resources for testing
 const sampleResources: ParsedResource[] = [
-  { type: 'event', id: 'OrderCreated', name: 'Order Created', version: '1.0.0', url: '/events/OrderCreated/1.0.0', summary: 'When an order is created' },
-  { type: 'event', id: 'OrderShipped', name: 'Order Shipped', version: '1.0.0', url: '/events/OrderShipped/1.0.0', summary: 'When order ships' },
-  { type: 'event', id: 'PaymentReceived', name: 'Payment Received', version: '2.0.0', url: '/events/PaymentReceived/2.0.0', summary: 'Payment completed' },
-  { type: 'command', id: 'CreateOrder', name: 'Create Order', version: '1.0.0', url: '/commands/CreateOrder/1.0.0', summary: 'Create a new order' },
-  { type: 'command', id: 'ShipOrder', name: 'Ship Order', version: '1.0.0', url: '/commands/ShipOrder/1.0.0', summary: 'Ship an order' },
-  { type: 'service', id: 'OrderService', name: 'Order Service', version: '1.0.0', url: '/services/OrderService/1.0.0', summary: 'Handles orders' },
-  { type: 'service', id: 'PaymentService', name: 'Payment Service', version: '1.0.0', url: '/services/PaymentService/1.0.0', summary: 'Handles payments' },
+  {
+    type: 'event',
+    id: 'OrderCreated',
+    name: 'Order Created',
+    version: '1.0.0',
+    url: '/events/OrderCreated/1.0.0',
+    summary: 'When an order is created',
+  },
+  {
+    type: 'event',
+    id: 'OrderShipped',
+    name: 'Order Shipped',
+    version: '1.0.0',
+    url: '/events/OrderShipped/1.0.0',
+    summary: 'When order ships',
+  },
+  {
+    type: 'event',
+    id: 'PaymentReceived',
+    name: 'Payment Received',
+    version: '2.0.0',
+    url: '/events/PaymentReceived/2.0.0',
+    summary: 'Payment completed',
+  },
+  {
+    type: 'command',
+    id: 'CreateOrder',
+    name: 'Create Order',
+    version: '1.0.0',
+    url: '/commands/CreateOrder/1.0.0',
+    summary: 'Create a new order',
+  },
+  {
+    type: 'command',
+    id: 'ShipOrder',
+    name: 'Ship Order',
+    version: '1.0.0',
+    url: '/commands/ShipOrder/1.0.0',
+    summary: 'Ship an order',
+  },
+  {
+    type: 'service',
+    id: 'OrderService',
+    name: 'Order Service',
+    version: '1.0.0',
+    url: '/services/OrderService/1.0.0',
+    summary: 'Handles orders',
+  },
+  {
+    type: 'service',
+    id: 'PaymentService',
+    name: 'Payment Service',
+    version: '1.0.0',
+    url: '/services/PaymentService/1.0.0',
+    summary: 'Handles payments',
+  },
   { type: 'team', id: 'platform-team', name: 'Platform Team', url: '/teams/platform-team', summary: 'Core platform' },
   { type: 'team', id: 'payments-team', name: 'Payments Team', url: '/teams/payments-team', summary: 'Payment processing' },
   { type: 'user', id: 'john-doe', name: 'John Doe', url: '/users/john-doe', summary: 'Developer' },
@@ -154,8 +203,7 @@ describe('filterAndPaginateResources', () => {
     });
 
     it('throws InvalidCursorError for invalid cursor', () => {
-      expect(() => filterAndPaginateResources(sampleResources, { cursor: 'invalid!!!' }))
-        .toThrow(InvalidCursorError);
+      expect(() => filterAndPaginateResources(sampleResources, { cursor: 'invalid!!!' })).toThrow(InvalidCursorError);
     });
 
     it('InvalidCursorError has MCP error code -32602', () => {
