@@ -7,7 +7,7 @@ This document outlines the security measures implemented in the EventCatalog MCP
 ### ✅ Image Security
 
 #### 1. **Pinned Base Image**
-- Uses specific Node.js version: `node:22.12.0-alpine3.21`
+- Uses specific Node.js version: `node:22.21.1-alpine3.21`
 - Prevents unexpected changes from automatic updates
 - Ensures reproducible builds
 - Alpine Linux reduces attack surface (smaller image size)

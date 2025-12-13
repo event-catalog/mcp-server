@@ -221,7 +221,7 @@ The Dockerfile follows industry security best practices. For detailed security i
 **Quick Security Checklist:**
 
 1. ✅ **Runs as non-root user** - Container uses `nodejs` user (UID 1001)
-2. ✅ **Pinned base image** - Uses `node:22.12.0-alpine3.21` (not `latest`)
+2. ✅ **Pinned base image** - Uses `node:22.21.1-alpine3.21` (not `latest`)
 3. ✅ **Multi-stage build** - Minimizes final image size to ~208MB
 4. ✅ **Security updates** - Alpine packages updated during build
 5. ✅ **No secrets in image** - Uses environment variables
